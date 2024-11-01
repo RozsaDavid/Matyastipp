@@ -1,0 +1,43 @@
+﻿@inherits LayoutComponentBase
+
+<header>
+    <div class="logo">
+        <p>Mátyáskert tippverseny</p>
+        <img src="/images/logo.png"/>
+    </div>
+    <div class="left-side">
+        <div class="left-side-menu">
+            <a href="/">Rólunk</a>
+        </div>
+        <div class="left-side-buttons">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <a href="/login" class="btn btn-success">Bejelentkezés</a>
+                    <a href="/registration" class="btn btn-primary">Regisztráció</a>
+                </NotAuthorized>
+                <Authorized>
+                    <a href="/profile?actualUsername=@context.User.Identity.Name" class="btn btn-success">Profil</a>
+                    <a href="/logout" class="btn btn-primary">Kijelentkezés</a>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</header>
+
+<div class="page">
+    <div>
+        <NavMenu />
+    </div>
+
+    <main>
+        <article>
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

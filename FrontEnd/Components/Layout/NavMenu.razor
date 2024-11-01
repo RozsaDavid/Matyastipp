@@ -1,0 +1,91 @@
+﻿@inject NavigationManager MyNavigationManager
+
+@rendermode InteractiveServer
+
+<nav>
+    <ul class="@orderSide">
+        <li><a class="@entryActive" @onclick="@menuEntry" @onclick:preventDefault><span>Nevezés</span></a>
+            <ul class="@submenuEntry">
+                <li><a href="#">Közelgő</a></li>
+                <li><a href="#">Folyamatban</a></li>
+            </ul>
+        </li>
+        <li><a class="@contestActive" @onclick="@menuContest" @onclick:preventDefault>Tippversenyeim</a>
+            <ul class="@submenuContest">
+                <li><a href="/upcoming">Közelgő</a></li>
+                <li><a href="#">Folyamatban</a></li>
+                <li><a href="#">Lezárult</a></li>
+            </ul>
+        </li>
+        <li><a class="@betActive" @onclick="@menuBet" @onclick:preventDefault>Tippek</a>
+            <ul class="@submenuBet">
+                <li><a href="#">Nyitott</a></li>
+                <li><a href="#">Aktív</a></li>
+                <li><a href="#">Lezárult</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    private string entryActive = "";
+    private string contestActive = "";
+    private string betActive = "";
+    private string submenuEntry = "submenu_inactive";
+    private string submenuContest = "submenu_inactive";
+    private string submenuBet = "submenu_inactive";
+    private string orderSide = "orderSide";
+
+    private void menuEntry() {
+        entryActive = "active";
+        contestActive = "";
+        betActive = "";
+        submenuContest = "submenu_inactive";
+        submenuBet = "submenu_inactive";
+
+        if(submenuEntry != "submenu_active"){
+            submenuEntry = "submenu_active";
+            orderSide = "";
+        } else {
+            submenuEntry = "submenu_inactive";
+            orderSide = "orderSide";
+        }
+
+    }
+
+    private void menuContest() {
+        entryActive = "";
+        contestActive = "active";
+        betActive = "";
+
+        submenuEntry = "submenu_inactive";
+        submenuBet = "submenu_inactive";
+
+        if(submenuContest != "submenu_active") {
+            submenuContest = "submenu_active";
+            orderSide = "";
+        } else {
+            submenuContest = "submenu_inactive";
+            orderSide = "orderSide";
+        }
+
+    }
+
+    private void menuBet() {
+        entryActive = "";
+        contestActive = "";
+        betActive = "active";
+
+        submenuEntry = "submenu_inactive";
+        submenuContest = "submenu_inactive";
+
+        if(submenuBet != "submenu_active") {
+            submenuBet = "submenu_active";
+            orderSide = "";
+        } else {
+            submenuBet = "submenu_inactive";
+            orderSide = "orderSide";
+        }
+        
+    }
+}

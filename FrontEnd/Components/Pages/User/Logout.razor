@@ -1,0 +1,29 @@
+﻿@page "/logout"
+
+@using Microsoft.AspNetCore.Authentication
+@inject NavigationManager navigationManager
+
+<h1>Kijelentkezés</h1>
+<hr />
+
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+        <div class="text-center mt-3">
+            <span class="text-danger fw-bold fs-5">Sikeres kijelentkezés.</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        if(httpContext.User.Identity.IsAuthenticated) {
+
+            await httpContext.SignOutAsync();
+            navigationManager.NavigateTo("logout", true);
+        }
+    }
+}

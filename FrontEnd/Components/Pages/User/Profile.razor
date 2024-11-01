@@ -1,0 +1,134 @@
+﻿@page "/profile"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Cryptography
+@using System.Text
+@using FrontEnd.ViewModel
+
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<h3>Profil</h3>
+
+@if(editUser is null) {
+    <p>Loading...</p>
+} else {
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="editUser" OnValidSubmit="EditUser" FormName="EditUser" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Felhasználónév</label>
+                    <InputText id="username" @bind-Value="editUser.Username" class="form-control" />
+                    <ValidationMessage For="()=>editUser.Username" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="realname" class="form-label">Valós név</label>
+                    <InputText id="realname" @bind-Value="editUser.RealName" class="form-control" />
+                    <ValidationMessage For="()=>editUser.RealName" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <InputText id="email" @bind-Value="editUser.Email" class="form-control" />
+                    <ValidationMessage For="()=>editUser.Email" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Jelszó</label>
+                    <InputText id="password" @bind-Value="editUser.Password" class="form-control" />
+                    <ValidationMessage For="()=>editUser.Password" class="text-danger" />
+                </div>
+
+                <div class="mb-3 text-center">
+                    <span class="text-danger">@errorMessage</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary md-4">Mentés</button>
+                <a href="/" class="btn btn-success">Vissza</a>
+            </EditForm>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary md-4" onclick="@InactivateUser">Fiók inaktiválása</button>
+}
+
+@code {
+
+    [SupplyParameterFromQuery]
+    private string actualUsername { get; set; }
+
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    [SupplyParameterFromForm]
+    private UserVM editUser { get; set; }
+
+    List<UserVM> usersList = new();
+
+    public string? errorMessage;
+
+    public bool usernameChanged = false;
+
+    protected override async Task OnInitializedAsync() {
+        var usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
+        if(usersList is not null) {
+            editUser = usersList.FirstOrDefault(user => user.Username == actualUsername);
+        } else {
+            navigationManager.NavigateTo("/error");
+        }
+    }
+
+    private async Task EditUser() {
+        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
+
+        foreach(var user in usersList) {
+            if(editUser.Id!=user.Id){
+                if(editUser.Username == user.Username) {
+                    errorMessage = "Felhasználónév foglalt.";
+                    return;
+                } else if(editUser.Email == user.Email) {
+                    errorMessage = "E-mailcím foglalt.";
+                    return;
+                }
+            }
+            else
+                if(editUser.Username != user.Username)
+                    usernameChanged = true;
+        }
+
+        try {
+            var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
+            if(resp.IsSuccessStatusCode) {
+                if(usernameChanged)        
+                    navigationManager.NavigateTo("/logout");
+                else
+                    navigationManager.NavigateTo("/");
+            } else {
+                navigationManager.NavigateTo("/error");
+            }
+        } catch {
+            throw;
+        }
+    }
+
+    private async Task InactivateUser() {
+        try {
+            var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
+            if(resp.IsSuccessStatusCode) {
+                navigationManager.NavigateTo("/logout");
+            } else {
+                navigationManager.NavigateTo("/error");
+            }
+        } catch {
+            throw;
+        }
+    }
+}
+

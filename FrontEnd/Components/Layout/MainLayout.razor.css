@@ -1,0 +1,92 @@
+header {
+    height: 200px;
+    display: flex;
+}
+    header .logo {
+        width: 250px;
+        padding-left: 25px;
+        float: left;
+        color: #f1f1ef;
+
+        font-size: 16px;
+        font-family: Verdana;
+        font-weight: bold;
+
+        text-align: center;
+    }
+
+        header .logo img {
+            width: 200px;
+        }
+
+        p{
+            height: 30px;
+        }
+
+    header .left-side{
+        margin-left: auto;
+        margin-right: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+        .left-side-menu {
+            margin-top: 50px;
+            text-align: right;
+        }
+
+            .left-side-menu a {
+                text-decoration: none;
+                color: #f1f1ef;
+                font-family: Verdana;
+                font-weight: bold;
+            }
+
+        .left-side-buttons {
+            display: flex;
+            align-self: flex-end;
+            margin-top: auto;
+            margin-bottom: 50px;
+            column-gap: 30px;
+        }
+
+            .left-side-buttons .btn {
+                color: #f1f1ef;
+                font-family: Verdana;
+                font-weight: bold;
+            }
+
+            .btn-primary {
+                background-color: #8B4513;
+                border-color: #8B4513;
+
+            }
+
+                .btn-primary:hover {
+                    background-color: #68340e;
+                    border-color: #68340e;
+                    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+                    transition-property: color, background-color, border-color, box-shadow;
+                    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+                    transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+                    transition-delay: 0s, 0s, 0s, 0s;
+                }
+
+@media screen and (max-width: 650px) {
+    header .logo {
+        font-size: 14px;
+    }
+
+    .left-side-buttons {
+        display: flex;
+        flex-direction: column;
+        align-self: flex-end;
+        margin-top: auto;
+        margin-bottom: 50px;
+        column-gap: 30px;
+    }
+
+        .left-side-buttons .btn {
+            margin-top: 30px;
+        }
+}

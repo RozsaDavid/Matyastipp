@@ -1,0 +1,20 @@
+﻿@page "/"
+
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Home</PageTitle>
+
+<div class="home-page">
+    <AuthorizeView>
+        <NotAuthorized>
+            <h1>Üdvözöllek az oldalon!</h1>
+
+            <p>Lépj be vagy regisztrálj!</p>
+    </NotAuthorized>
+        <Authorized>
+            <h1>Üdvözöllek @context.User.Identity.Name!</h1>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+

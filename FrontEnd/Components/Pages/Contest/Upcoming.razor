@@ -1,0 +1,21 @@
+﻿@page "/upcoming"
+
+@using FrontEnd.ViewModel
+@inject HttpClient httpClient
+
+<h3>Közelgő tippversenyek</h3>
+
+<p>
+    @foreach (var contest in contestsList) {
+        @contest.Name;
+        <br/>
+    }
+</p>
+
+@code {
+    List<ContestVM> contestsList = new(); 
+
+    protected override async Task OnInitializedAsync() {
+        contestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>("api/contest") ;
+    }
+}
