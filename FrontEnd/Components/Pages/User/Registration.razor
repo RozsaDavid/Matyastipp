@@ -1,5 +1,9 @@
 ﻿@page "/registration"
+
 @using FrontEnd.ViewModel
+@using System.Security.Cryptography
+@using System.Text
+
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
@@ -65,6 +69,10 @@
                 return;
             }
         }
+
+        var source = Encoding.UTF8.GetBytes(newUser.Password);
+        var hashBytes = MD5.Create().ComputeHash(source);
+        newUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
         var response = await httpClient.PostAsJsonAsync("api/user", newUser);
 

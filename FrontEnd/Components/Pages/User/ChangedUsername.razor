@@ -1,0 +1,46 @@
+﻿@page "/changedUsername"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Cryptography
+@using FrontEnd.ViewModel
+
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject IJSRuntime javaScript
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string actualUsername { get; set; }
+
+    List<UserVM> usersList = new();
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        if(httpContext.User.Identity.IsAuthenticated) {
+
+            await httpContext.SignOutAsync();
+
+        }
+
+        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
+
+        var userAccount = usersList.Where(x => x.Username == actualUsername).FirstOrDefault();
+
+        var claims = new List<Claim>{
+                new Claim(ClaimTypes.Name, actualUsername),
+            };
+
+        ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+        await httpContext.SignInAsync(principal);
+
+        navigationManager.NavigateTo("/");
+    }
+
+}

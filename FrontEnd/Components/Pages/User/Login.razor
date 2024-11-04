@@ -56,11 +56,10 @@
 
         var userAccount = usersList.Where(x => x.Username == loginModel.Username).FirstOrDefault();
 
-        /*
         var source = Encoding.UTF8.GetBytes(loginModel.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         loginModel.Password = BitConverter.ToString(hashBytes).Replace("-", "");
-        */
+        
 
         if(userAccount is null || userAccount.Password != loginModel.Password) {
             errorMessage = "A felhasználónév vagy jelszó nem egyezik.";

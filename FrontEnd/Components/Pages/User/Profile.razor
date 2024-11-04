@@ -80,6 +80,7 @@
         var usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
         if(usersList is not null) {
             editUser = usersList.FirstOrDefault(user => user.Username == actualUsername);
+            editUser.Password = string.Empty;
         } else {
             navigationManager.NavigateTo("/error");
         }
@@ -103,18 +104,18 @@
                     usernameChanged = true;
         }
 
-        try {
-            var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
-            if(resp.IsSuccessStatusCode) {
-                if(usernameChanged)        
-                    navigationManager.NavigateTo("/logout");
-                else
-                    navigationManager.NavigateTo("/");
-            } else {
-                navigationManager.NavigateTo("/error");
-            }
-        } catch {
-            throw;
+        var source = Encoding.UTF8.GetBytes(editUser.Password);
+        var hashBytes = MD5.Create().ComputeHash(source);
+        editUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
+
+        var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
+        if(resp.IsSuccessStatusCode) {
+            if(usernameChanged)        
+                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username);
+            else
+                navigationManager.NavigateTo("/");
+        } else {
+            navigationManager.NavigateTo("/error");
         }
     }
 
