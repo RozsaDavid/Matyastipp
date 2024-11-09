@@ -17,6 +17,9 @@
     [SupplyParameterFromQuery]
     private string actualUsername { get; set; }
 
+    [SupplyParameterFromQuery]
+    private string accessToken { get; set; }
+
     List<UserVM> usersList = new();
 
     protected override async Task OnInitializedAsync() {
@@ -27,12 +30,9 @@
 
         }
 
-        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
-
-        var userAccount = usersList.Where(x => x.Username == actualUsername).FirstOrDefault();
-
         var claims = new List<Claim>{
                 new Claim(ClaimTypes.Name, actualUsername),
+                new Claim("token", accessToken)
             };
 
         ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

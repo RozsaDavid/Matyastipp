@@ -57,27 +57,22 @@
     public string? errorMessage;
 
     private async Task AddUser() {
-        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
-
-        foreach(var user in usersList) {
-            if(newUser.Username == user.Username) {
-                errorMessage = "Felhasználónév foglalt.";
-                return;
-            }
-            else if(newUser.Email == user.Email) {
-                errorMessage = "E-mailcím foglalt.";
-                return;
-            }
+        if(newUser.Password == string.Empty) {
+            errorMessage = "Hibás jelszó!";
+            return;
         }
 
         var source = Encoding.UTF8.GetBytes(newUser.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         newUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
-        var response = await httpClient.PostAsJsonAsync("api/user", newUser);
+        var response = await httpClient.PostAsJsonAsync("api/user/registration", newUser);
+        newUser.Password = string.Empty;
 
         if(response.IsSuccessStatusCode) {
             navigationManager.NavigateTo("/");
+        } else {
+            errorMessage = await response.Content.ReadAsStringAsync();
         }
     }
 }

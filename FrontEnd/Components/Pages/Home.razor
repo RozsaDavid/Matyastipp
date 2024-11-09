@@ -1,6 +1,8 @@
 ﻿@page "/"
 
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication.Cookies
 
 <PageTitle>Home</PageTitle>
 
@@ -8,7 +10,6 @@
     <AuthorizeView>
         <NotAuthorized>
             <h1>Üdvözöllek az oldalon!</h1>
-
             <p>Lépj be vagy regisztrálj!</p>
     </NotAuthorized>
         <Authorized>
@@ -16,5 +17,3 @@
         </Authorized>
     </AuthorizeView>
 </div>
-
-

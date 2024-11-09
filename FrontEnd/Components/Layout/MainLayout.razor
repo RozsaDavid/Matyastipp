@@ -1,5 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+
 <header>
     <div class="logo">
         <p>Mátyáskert tippverseny</p>
@@ -16,7 +20,7 @@
                     <a href="/registration" class="btn btn-primary">Regisztráció</a>
                 </NotAuthorized>
                 <Authorized>
-                    <a href="/profile?actualUsername=@context.User.Identity.Name" class="btn btn-success">Profil</a>
+                    <a href="/profile?actualUsername=@context.User.Identity.Name&accessToken=@accessToken" class="btn btn-success">Profil</a>
                     <a href="/logout" class="btn btn-primary">Kijelentkezés</a>
                 </Authorized>
             </AuthorizeView>
@@ -41,3 +45,14 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code{
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    string accessToken;
+
+    protected override async Task OnInitializedAsync() {
+        accessToken = httpContext.User.FindFirstValue("token");
+        }
+}

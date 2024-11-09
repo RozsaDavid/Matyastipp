@@ -12,9 +12,9 @@
 @rendermode InteractiveServer
 
 <h3>Profil</h3>
-
 @if(editUser is null) {
     <p>Loading...</p>
+    @errorMessage
 } else {
     <div class="row">
         <div class="col-md-4">
@@ -64,6 +64,9 @@
     [SupplyParameterFromQuery]
     private string actualUsername { get; set; }
 
+    [SupplyParameterFromQuery]
+    private string accessToken { get; set; }
+
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
@@ -74,62 +77,55 @@
 
     public string? errorMessage;
 
-    public bool usernameChanged = false;
-
     protected override async Task OnInitializedAsync() {
-        var usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
-        if(usersList is not null) {
-            editUser = usersList.FirstOrDefault(user => user.Username == actualUsername);
-            editUser.Password = string.Empty;
-        } else {
+        await base.OnInitializedAsync();
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        editUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/userData/{actualUsername}");
+        if(editUser is null) {
             navigationManager.NavigateTo("/error");
+        } else {
+            editUser.Password = string.Empty;
         }
     }
 
     private async Task EditUser() {
-        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
-
-        foreach(var user in usersList) {
-            if(editUser.Id!=user.Id){
-                if(editUser.Username == user.Username) {
-                    errorMessage = "Felhasználónév foglalt.";
-                    return;
-                } else if(editUser.Email == user.Email) {
-                    errorMessage = "E-mailcím foglalt.";
-                    return;
-                }
-            }
-            else
-                if(editUser.Username != user.Username)
-                    usernameChanged = true;
+        if(editUser.Password == string.Empty) {
+            errorMessage = "Hibás jelszó!";
+            return;
         }
 
         var source = Encoding.UTF8.GetBytes(editUser.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         editUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
-        var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
-        if(resp.IsSuccessStatusCode) {
-            if(usernameChanged)        
-                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username);
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
+        editUser.Password = string.Empty;
+
+        if(response.IsSuccessStatusCode) {
+            if(actualUsername!=editUser.Username)        
+                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username+"&accessToken="+accessToken);
             else
                 navigationManager.NavigateTo("/");
         } else {
-            navigationManager.NavigateTo("/error");
+            errorMessage = await response.Content.ReadAsStringAsync();
         }
     }
 
     private async Task InactivateUser() {
-        try {
-            var resp = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
-            if(resp.IsSuccessStatusCode) {
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
+            if(response.IsSuccessStatusCode) {
                 navigationManager.NavigateTo("/logout");
             } else {
-                navigationManager.NavigateTo("/error");
+                errorMessage = await response.Content.ReadAsStringAsync();
             }
-        } catch {
-            throw;
-        }
     }
 }
 

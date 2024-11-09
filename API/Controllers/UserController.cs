@@ -1,7 +1,12 @@
 ﻿using API.DAL.Data;
 using API.DAL.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 
 namespace API.Controllers {
@@ -9,28 +14,87 @@ namespace API.Controllers {
     [ApiController]
     public class UserController :ControllerBase {
         private readonly MatyaskertContext _dbContext;
+        private readonly IConfiguration _configuration;
 
-        public UserController(MatyaskertContext dbContext) {
+        public UserController(MatyaskertContext dbContext, IConfiguration configuration) {
             _dbContext = dbContext;
+            _configuration = configuration;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAllUser() {
+        [Authorize]
+        [HttpGet("getUsernameWithToken")]
+        public async Task<ActionResult<string>> GetUserName() {
+            return Ok(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+        }
+
+        [Authorize]
+        [HttpGet("userData/{actualUsername}")]
+        public async Task<ActionResult<User>> GetUserData(string actualUsername) {
+            var selectUser = await _dbContext.Users.Where(x => x.Username == actualUsername).FirstOrDefaultAsync();
+            return Ok(selectUser);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> Login(string[] userData) {
+            string username = userData[0];
+            string password = userData[1];
+
+            var selectUser = await _dbContext.Users.Where(x => x.Username == username).FirstOrDefaultAsync();
+            if(selectUser is null)
+                return Unauthorized("Hibás felhasználónév és/vagy jelszó.");
+            if(selectUser.IsActive != 1)
+                return Unauthorized("Inaktív felhasználó.\nLépjen kapcsolatba a rendszergazdával.");
+            if(password == selectUser.Password) {
+                var authClaim = new List<Claim> {
+                    new Claim(JwtRegisteredClaimNames.Sub,selectUser.Username!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:Expire"]!)),
+                    claims: authClaim,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
+                    SecurityAlgorithms.HmacSha256
+                    ));
+                return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+            }
+            return Unauthorized("Hibás felhasználónév és/vagy jelszó.");
+        }
+
+        [HttpPost("registration")]
+        public async Task<ActionResult> AddUser(User newUser) {
             var users = _dbContext.Users.ToList();
 
-            return Ok(users);
-        }
+            foreach(var user in users) {
+                if(newUser.Username == user.Username) {
+                    return BadRequest("Foglalt felhasználónév!");
+                } else if(newUser.Email == user.Email) {
+                    return BadRequest("Foglalt e-mailcím!");
+                }
+            }
 
-        [HttpPost]
-        public async Task<ActionResult<List<User>>> AddUser(User user) {
-            _dbContext.Users.Add(user);
+            _dbContext.Users.Add(newUser);
             await _dbContext.SaveChangesAsync();
-            return Ok(await _dbContext.Users.ToListAsync());
+            return Ok();
         }
 
+        [Authorize]
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<List<User>>> UpdateUser(int id, [FromBody] User updateUser) {
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] User updateUser) {
+            var users = _dbContext.Users.ToList();
+
+            foreach(var user in users) {
+                if(user.Id != id) {
+                    if(updateUser.Username == user.Username) {
+                        return BadRequest("Foglalt felhasználónév!");
+                    } else if(updateUser.Email == user.Email) {
+                        return BadRequest("Foglalt e-mailcím!");
+                    }
+                }
+            }
+
             var selectUser = await _dbContext.Users.FindAsync(id);
             if(selectUser == null) {
                 return NotFound("A felhasználó nem található.");
@@ -41,9 +105,10 @@ namespace API.Controllers {
                 selectUser.Password = updateUser.Password;
             }
             await _dbContext.SaveChangesAsync();
-            return Ok(await _dbContext.Users.ToListAsync());
+            return Ok();
         }
 
+        [Authorize]
         [HttpPut]
         [Route("inactivate/{id}")]
         public async Task<ActionResult<List<User>>> InactivateUser(int id, [FromBody] User updateUser) {
@@ -54,7 +119,7 @@ namespace API.Controllers {
                 selectUser.IsActive = 0;
             }
             await _dbContext.SaveChangesAsync();
-            return Ok(await _dbContext.Users.ToListAsync());
+            return Ok();
         }
     }
 }

@@ -52,40 +52,52 @@
     public string? errorMessage;
 
     private async Task Authenticate() {
-        usersList = await httpClient.GetFromJsonAsync<List<UserVM>>("api/user");
-
-        var userAccount = usersList.Where(x => x.Username == loginModel.Username).FirstOrDefault();
-
+        //jelszó kódolása
         var source = Encoding.UTF8.GetBytes(loginModel.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         loginModel.Password = BitConverter.ToString(hashBytes).Replace("-", "");
-        
 
-        if(userAccount is null || userAccount.Password != loginModel.Password) {
-            errorMessage = "A felhasználónév vagy jelszó nem egyezik.";
-            loginModel.Password = String.Empty;
-            return;
-        }
-
-        if(userAccount.IsActive == 0) {
-            errorMessage = "A felhasználó nem aktív. Kérjük lépjen kapcsolatba a rendszergazdával.";
-            loginModel.Password = String.Empty;
-            return;
-        }
-
+        //adatok előkészítése az apinak
+        string[] userData = { loginModel.Username, loginModel.Password };
         loginModel.Password = String.Empty;
+        //api
+        var response = await httpClient.PostAsJsonAsync("api/user/login", userData);
 
-        var claims = new List<Claim>{
-            new Claim(ClaimTypes.Name, loginModel.Username),
-        };
+        //felhasználó bejelentkeztetése
+        if(response.IsSuccessStatusCode) {
+            string accessToken = await response.Content.ReadAsStringAsync();
+            accessToken = accessToken.Replace("\"", string.Empty);
+            accessToken = accessToken.Replace("}", string.Empty);
+            string[] splittedAccessToken = accessToken.Split(":");
+            accessToken = splittedAccessToken[1];
 
-        ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        await httpContext.SignInAsync(principal);
+            //Ha ez működik akkor jó a token (duplaellenőrzés)
+            var username = await httpClient.GetFromJsonAsync<string>("api/user/getUsernameWithToken");
 
-        httpContext.Response.Redirect("Home");
+            //ha jó, akkor bejelentkezés és token mentése a Claim-ként
+            if (username != null){
+                
+                var claims = new List<Claim>{
+                    new Claim(ClaimTypes.Name, username),
+                    new Claim("token", accessToken)
+                };
 
-        navigationManager.NavigateTo("/");
+                ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+                await httpContext.SignInAsync(principal);
+                              
+                httpContext.Response.Redirect("Home");
+                navigationManager.NavigateTo("/");
+            } else {
+                errorMessage = "Hiba a bejelentkezés során.";
+            }
+        } else {
+            errorMessage = await response.Content.ReadAsStringAsync(); 
+        }
+
     }
 }
