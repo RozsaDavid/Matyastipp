@@ -58,10 +58,11 @@ nav {
                 background-color: #8B4513;
             }
 
-            .submenu_active a{
-                border-bottom: solid 2px;
-                border-color: #f1f1ef;
-            }
+                .submenu_active a {
+                    border-bottom: solid 2px;
+                    border-color: #f1f1ef;
+                    color: #f1f1ef;
+                }
 
                 .submenu_active a:hover {
                     background-color: rgb(193,148,52);

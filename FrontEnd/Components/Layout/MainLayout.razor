@@ -20,7 +20,7 @@
                     <a href="/registration" class="btn btn-primary">Regisztráció</a>
                 </NotAuthorized>
                 <Authorized>
-                    <a href="/profile?actualUsername=@context.User.Identity.Name&accessToken=@accessToken" class="btn btn-success">Profil</a>
+                    <a href="/profile?actualUsername=@context.User.Identity.Name&accessToken=@accessToken&userId=@userId" class="btn btn-success">Profil</a>
                     <a href="/logout" class="btn btn-primary">Kijelentkezés</a>
                 </Authorized>
             </AuthorizeView>
@@ -51,8 +51,10 @@
     public HttpContext httpContext { get; set; }
 
     string accessToken;
+    string userId;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");
+        userId = httpContext.User.FindFirstValue("id");
         }
 }

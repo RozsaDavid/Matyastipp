@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Bet
-{
+public partial class Bet {
     public int Id { get; set; }
 
     public int ContestId { get; set; }

@@ -1,0 +1,119 @@
+﻿@page "/makeBet"
+
+@using FrontEnd.ViewModel
+
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<h3>Profil</h3>
+
+@if(actualUser is null) {
+    <p>Loading...</p>
+    @errorMessage
+    }else{
+<p>@actualUser.Username</p>
+<p>@actualUser.Id</p>
+
+<div class="row">
+        <div class="col-md-4">
+            <EditForm Model="newBet" OnValidSubmit="NewBet" FormName="NewBet" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+
+                <div class="mb-3">
+                    <label for="homeTeam" class="form-label">@homeTeam</label>
+                    <InputNumber id="homeTeam" @bind-Value="newBet.HomeGoals" class="form-control" />
+                    <ValidationMessage For="()=>newBet.HomeGoals" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="guestTeam" class="form-label">@guestTeam</label>
+                    <InputNumber id="guestTeam" @bind-Value="newBet.GuestGoals" class="form-control" />
+                    <ValidationMessage For="()=>newBet.GuestGoals" class="text-danger" />
+                </div>
+
+                <div class="mb-3 text-center">
+                    <span class="text-danger">@errorMessage</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary md-4">Mentés</button>
+                <a href="/" class="btn btn-success">Vissza</a>
+            </EditForm>
+        </div>
+    </div>
+   
+}
+
+@code {
+
+    [SupplyParameterFromQuery]
+    private int contestId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string accessToken { get; set; }
+
+    [SupplyParameterFromQuery]
+    private int matchId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string prevPage { get; set; }
+
+    [SupplyParameterFromForm]
+    private BetVM newBet { get; set; }
+
+    private UserVM actualUser{ get; set; }
+
+    private MatchVM actualMatch { get; set; }
+
+    public string homeTeam;
+    public string guestTeam;
+
+    public string? errorMessage;
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        actualUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/getUserWithToken");
+        if(actualUser is null) {
+            navigationManager.NavigateTo("/error");
+        }
+
+        actualMatch = await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{matchId}");
+        if(actualMatch is null) {
+            navigationManager.NavigateTo("/error");
+        }
+
+        newBet = new BetVM();
+        newBet.MatchId=matchId;
+        newBet.ContestId = contestId;
+        newBet.UserId = actualUser.Id;
+        newBet.IsWon = 0;
+
+        homeTeam = actualMatch.HomeName;
+        guestTeam = actualMatch.GuestName;
+    }
+
+    private async Task NewBet() {
+        if(newBet.GuestGoals<0 || newBet.HomeGoals < 0) {
+            errorMessage = "Érvénytelen tipp";
+            return;
+        }
+
+        string[] newBetData = { newBet.MatchId.ToString(), newBet.ContestId.ToString(), newBet.UserId.ToString(), newBet.IsWon.ToString(), newBet.GuestGoals.ToString(), newBet.HomeGoals.ToString() };
+
+        var response = await httpClient.PostAsJsonAsync("api/bet/addBet", newBetData);
+
+        if(response.IsSuccessStatusCode)
+            navigationManager.NavigateTo($"{prevPage}");
+        else {
+            errorMessage = await response.Content.ReadAsStringAsync();
+            errorMessage += newBetData;
+            return;
+        }
+    }
+}
+
+

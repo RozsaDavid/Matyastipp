@@ -1,4 +1,4 @@
-﻿@inject NavigationManager MyNavigationManager
+﻿@inject NavigationManager navigationManager
 
 @rendermode InteractiveServer
 
@@ -6,22 +6,22 @@
     <ul class="@orderSide">
         <li><a class="@entryActive" @onclick="@menuEntry" @onclick:preventDefault><span>Nevezés</span></a>
             <ul class="@submenuEntry">
-                <li><a href="#">Közelgő</a></li>
-                <li><a href="#">Folyamatban</a></li>
+                <li><a @onclick="@menuSignUpcoming" @onclick:preventDefault>Közelgő</a></li>
+                <li><a @onclick="@menuSignOngoing" @onclick:preventDefault>Folyamatban</a></li>
             </ul>
         </li>
         <li><a class="@contestActive" @onclick="@menuContest" @onclick:preventDefault>Tippversenyeim</a>
             <ul class="@submenuContest">
-                <li><a href="/upcoming">Közelgő</a></li>
-                <li><a href="#">Folyamatban</a></li>
-                <li><a href="#">Lezárult</a></li>
+                <li><a @onclick="@menuUpcoming" @onclick:preventDefault>Közelgő</a></li>
+                <li><a @onclick="@menuOngoing" @onclick:preventDefault>Folyamatban</a></li>
+                <li><a @onclick="@menuPast" @onclick:preventDefault>Lezárult</a></li>
             </ul>
         </li>
         <li><a class="@betActive" @onclick="@menuBet" @onclick:preventDefault>Tippek</a>
             <ul class="@submenuBet">
-                <li><a href="#">Nyitott</a></li>
-                <li><a href="#">Aktív</a></li>
-                <li><a href="#">Lezárult</a></li>
+                <li><a @onclick="@menuOpened" @onclick:preventDefault>Nyitott</a></li>
+                <li><a @onclick="@menuActive" @onclick:preventDefault>Aktív</a></li>
+                <li><a @onclick="@menuPastBet" @onclick:preventDefault>Lezárt</a></li>
             </ul>
         </li>
     </ul>
@@ -86,6 +86,46 @@
             submenuBet = "submenu_inactive";
             orderSide = "orderSide";
         }
-        
+
+    }
+
+    private void menuSignUpcoming() {
+        submenuEntry = "submenu_inactive";
+        navigationManager.NavigateTo("/signUpcoming");
+    }
+
+    private void menuSignOngoing() {
+        submenuEntry = "submenu_inactive";
+        navigationManager.NavigateTo("/signOngoing");
+    }
+
+    private void menuUpcoming() {
+        submenuContest = "submenu_inactive";
+        navigationManager.NavigateTo("/upcoming");
+    }
+
+    private void menuOngoing() {
+        submenuContest = "submenu_inactive";
+        navigationManager.NavigateTo("/ongoing");
+    }
+
+    private void menuPast() {
+        submenuContest = "submenu_inactive";
+        navigationManager.NavigateTo("/past");
+    }
+
+    private void menuOpened() {
+        submenuBet = "submenu_inactive";
+        navigationManager.NavigateTo("/allOpenedMatches");
+    }
+
+    private void menuActive() {
+        submenuBet = "submenu_inactive";
+        navigationManager.NavigateTo("/activeBets");
+    }
+
+    private void menuPastBet() {
+        submenuBet = "submenu_inactive";
+        navigationManager.NavigateTo("/pastBets");
     }
 }

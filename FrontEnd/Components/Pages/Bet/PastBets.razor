@@ -1,0 +1,74 @@
+﻿@page "/pastBets"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+@using FrontEnd.ViewModel
+@inject HttpClient httpClient
+
+<h3>Lezárt tippjeim</h3>
+
+<p>
+    @foreach(var contest in myContestsList) {
+    <p>@contest.Id : @contest.Name</p>
+        @foreach(var match in closedMatchesList[i]) {
+            @foreach(var bet in myBetsToClosedMatchesList)
+                @if(contest.Id==bet.ContestId && match.Id == bet.MatchId) {
+                    <p>Végeredmény:</p>
+                    <p>@match.Id : @match.HomeName @match.HomeGoals : @match.GuestGoals @match.GuestName</p>
+                    <p>Tippelt eredmény:</p>
+                    <p>@bet.Id : @bet.HomeGoals : @bet.GuestGoals</p>
+                    @if(bet.IsWon==1){
+                        <p>Nyert!</p>
+                    }
+                    else{
+                        <p>Nem nyert!</p>
+                    }
+                    <br />
+                }
+        }
+
+        @if(1 == 1) {
+            i++;
+        }
+    }
+</p>
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    List<ContestVM> myContestsList = new List<ContestVM>();
+    List<List<MatchVM>> closedMatchesList = new List<List<MatchVM>>();
+    List<BetVM> myBetsToClosedMatchesList = new List<BetVM>();
+
+    string accessToken;
+
+    int i = 0;
+
+    protected override async Task OnInitializedAsync() {
+        accessToken = httpContext.User.FindFirstValue("token");
+        string userId = httpContext.User.FindFirstValue("id");
+
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        myContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userContests/{userId}");
+
+        foreach(var contest in myContestsList) {
+            var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/closedMatches/{contest.Id}");
+            closedMatchesList.Add(tmpMatchList);
+        }
+
+        int i = 0;
+        foreach(var contest in myContestsList) {
+            foreach(var matchInContest in closedMatchesList[i]) {
+                var betForMatchInContest = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
+                if(betForMatchInContest!= null)
+                    myBetsToClosedMatchesList.Add(betForMatchInContest);
+            }
+            i++;
+        }
+    }
+}

@@ -1,0 +1,48 @@
+﻿@page "/standings"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+@using FrontEnd.ViewModel
+@inject HttpClient httpClient
+
+<h3>Ranglista</h3>
+
+<p>
+    @for(int i=0;i<standingList.Count();i++) {
+        <p>@(i+1). ...@standingList[i].Username...@standingList[i].Points</p>
+        <br />
+    }
+</p>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int contestId { get; set; }
+
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    List<string> standingSTR = new List<string>();
+
+    List<StandingVM> standingList = new();
+
+    protected override async Task OnInitializedAsync() {
+        string accessToken = httpContext.User.FindFirstValue("token");
+
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        standingSTR = await httpClient.GetFromJsonAsync<List<string>>($"api/contest/standing/{contestId}");
+
+        foreach(string stnd in standingSTR) {
+            string[] tmp = stnd.Split(';');
+            StandingVM stndTMP = new StandingVM();
+            stndTMP.Username = tmp[0];
+            stndTMP.Points = Int32.Parse(tmp[1]);
+            standingList.Add(stndTMP); 
+        }
+
+        standingList=standingList.OrderByDescending(s => s.Points).ToList();
+    }
+}

@@ -1,4 +1,4 @@
-﻿@page "/upcoming"
+﻿@page "/past"
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
@@ -7,12 +7,13 @@
 @using FrontEnd.ViewModel
 @inject HttpClient httpClient
 
-<h3>Közelgő tippversenyeim</h3>
+<h3>Lezajlott tippversenyeim</h3>
 
 <p>
-    @foreach (var contest in upcomingContestsList) {
-        @contest.Name;
-        <br/>
+    @foreach(var contest in pastContestsList) {
+        @contest.Name
+        <a href="/standings?contestId=@contest.Id" class="btn btn-success">Ranglista</a>
+        <br />
     }
 </p>
 
@@ -20,17 +21,17 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<ContestVM> upcomingContestsList = new(); 
+    List<ContestVM> pastContestsList = new();
 
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
+
         string userId = httpContext.User.FindFirstValue("id");
 
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-        
-        upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/upcomingContest/{userId}");
-    }
 
+        pastContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/pastContest/{userId}");
+    }
 }

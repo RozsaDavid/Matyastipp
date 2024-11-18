@@ -1,0 +1,46 @@
+﻿@page "/activeBets"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+@using FrontEnd.ViewModel
+@inject HttpClient httpClient
+
+<h3>Aktív tippjeim</h3>
+
+<p>
+    @for(int i=0;i<myBets.Count(); i++) {
+        <p>@myBets[i].Id , @myBets[i].ContestId , @betsContests[i].Name , @myBets[i].MatchId , @betsMatches[i].HomeName : @myBets[i].HomeGoals , @betsMatches[i].GuestName : @myBets[i].GuestGoals</p>
+        <a href="/editBet?accessToken=@accessToken&prevPage=/activeBets&betId=@myBets[i].Id" class="btn btn-success">Tipp szerkesztése</a>
+        <br />
+    }
+</p>
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    List<BetVM> myBets = new List<BetVM>();
+    List<ContestVM> betsContests = new List<ContestVM>();
+    List<MatchVM> betsMatches = new List<MatchVM>();
+
+    string accessToken;
+
+    protected override async Task OnInitializedAsync() {
+        accessToken = httpContext.User.FindFirstValue("token");
+        string userId = httpContext.User.FindFirstValue("id");
+
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        myBets = await httpClient.GetFromJsonAsync<List<BetVM>>($"api/bet/userBets/{userId}");
+        foreach(var bet in myBets) {
+            betsContests.Add(await httpClient.GetFromJsonAsync<ContestVM>($"api/contest/getContestWithId/{bet.ContestId}"));
+            betsMatches.Add(await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{bet.MatchId}"));
+        }
+    }
+    
+}
+
+

@@ -75,14 +75,15 @@
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
             //Ha ez működik akkor jó a token (duplaellenőrzés)
-            var username = await httpClient.GetFromJsonAsync<string>("api/user/getUsernameWithToken");
+            var user = await httpClient.GetFromJsonAsync<UserVM>("api/user/getUserWithToken");
 
-            //ha jó, akkor bejelentkezés és token mentése a Claim-ként
-            if (username != null){
+            //ha jó, akkor bejelentkezés és token mentése Claim-ként
+            if (user != null){
                 
                 var claims = new List<Claim>{
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim("token", accessToken)
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim("token", accessToken),
+                    new Claim("id", user.Id.ToString())
                 };
 
                 ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

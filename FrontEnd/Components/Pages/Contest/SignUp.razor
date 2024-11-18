@@ -1,4 +1,4 @@
-﻿@page "/upcoming"
+﻿@page "/signUp"
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
@@ -6,22 +6,23 @@
 
 @using FrontEnd.ViewModel
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
-<h3>Közelgő tippversenyeim</h3>
+Nevezés...
 
-<p>
-    @foreach (var contest in upcomingContestsList) {
-        @contest.Name;
-        <br/>
-    }
-</p>
+@errorMessage
 
 @code {
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<ContestVM> upcomingContestsList = new(); 
+    [SupplyParameterFromQuery]
+    string contestId { get; set; }
 
+    [SupplyParameterFromQuery]
+    string prevPage { get; set; }
+
+    string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
@@ -29,8 +30,16 @@
 
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-        
-        upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/upcomingContest/{userId}");
-    }
 
+        string[] signOnData = { userId.ToString(), contestId.ToString() };
+
+        var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
+
+        if(response.IsSuccessStatusCode) {
+            navigationManager.NavigateTo($"{prevPage}");
+        } else {
+            errorMessage = await response.Content.ReadAsStringAsync();
+            errorMessage += "Valami nem jó.";
+        }
+    }
 }

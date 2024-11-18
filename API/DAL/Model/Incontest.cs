@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Incontest
-{
+public partial class Incontest {
     public int ContestId { get; set; }
 
     public int MatchId { get; set; }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Standing
-{
+public partial class Standing {
     public int? Points { get; set; }
 
     public int ContestId { get; set; }

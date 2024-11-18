@@ -1,0 +1,54 @@
+﻿@page "/signOngoing"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+@using FrontEnd.ViewModel
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<h3>Folyamatban lévő tippversenyek</h3>
+
+<p>
+    @foreach(var contest in upcomingContestsList) {
+        @contest.Name
+        <a href="/signUp?contestId=@contest.Id&prevPage=/signOngoing" class="btn btn-success">Nevezés</a>
+        <br />
+    }
+    @errorMessage
+</p>
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpContext { get; set; }
+
+    List<ContestVM> upcomingContestsList = new();
+
+    string userId;
+    string errorMessage;
+
+    protected override async Task OnInitializedAsync() {
+        string accessToken = httpContext.User.FindFirstValue("token");
+        userId = httpContext.User.FindFirstValue("id");
+
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+        upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableOngoingContest/{userId}");
+    }
+
+    private async Task signContest(int contestId) {
+        string[] signOnData = { userId.ToString(), contestId.ToString() };
+
+        var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
+
+        if(response.IsSuccessStatusCode) {
+            navigationManager.NavigateTo("/signUpcoming");
+        } else {
+            errorMessage = await response.Content.ReadAsStringAsync();
+            errorMessage += "Valami nem jó.";
+        }
+    }
+}
+

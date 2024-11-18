@@ -10,7 +10,7 @@
 <div class="row">
     <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
         <div class="text-center mt-3">
-            <span class="text-danger fw-bold fs-5">@username Sikeres kijelentkezés.</span>
+            <span class="text-danger fw-bold fs-5">Sikeres kijelentkezés.</span>
         </div>
     </div>
 </div>
@@ -18,11 +18,6 @@
 @code {
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
-
-    [CascadingParameter]
-    public string accessToken { get; set; }
-
-    string username;
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();

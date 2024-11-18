@@ -8,7 +8,6 @@
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
-@inject IJSRuntime javaScript
 
 @code {
     [CascadingParameter]
@@ -20,7 +19,8 @@
     [SupplyParameterFromQuery]
     private string accessToken { get; set; }
 
-    List<UserVM> usersList = new();
+    [SupplyParameterFromQuery]
+    private string userId { get; set; }
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
@@ -32,7 +32,8 @@
 
         var claims = new List<Claim>{
                 new Claim(ClaimTypes.Name, actualUsername),
-                new Claim("token", accessToken)
+                new Claim("token", accessToken),
+                new Claim("id", userId)
             };
 
         ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

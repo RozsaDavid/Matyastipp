@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Contest
-{
+public partial class Contest {
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;

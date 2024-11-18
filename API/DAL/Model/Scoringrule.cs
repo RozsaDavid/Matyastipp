@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Scoringrule
-{
+public partial class Scoringrule {
     public string Description { get; set; } = null!;
 
     public int Points { get; set; }

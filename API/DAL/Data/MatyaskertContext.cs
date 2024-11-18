@@ -153,8 +153,9 @@ public partial class MatyaskertContext :DbContext {
 
         modelBuilder.Entity<Standing>(entity => {
             entity
-                .HasNoKey()
-                .ToTable("standings");
+                .HasKey(e => new { e.UserId, e.ContestId });
+
+            entity.ToTable("standings");
 
             entity.HasIndex(e => e.ContestId, "contestId");
 

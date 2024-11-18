@@ -22,16 +22,28 @@ namespace API.Controllers {
         }
 
         [Authorize]
-        [HttpGet("getUsernameWithToken")]
-        public async Task<ActionResult<string>> GetUserName() {
-            return Ok(User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+        [HttpGet("getUserWithToken")]
+        public async Task<ActionResult<User>> GetUserWithToken() {
+            User resultUser = new User();
+
+            var users = _dbContext.Users.ToList();
+
+            foreach(var user in users)
+                if(user.Username == User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString())
+                    resultUser = user;
+
+            return Ok(resultUser);
         }
 
         [Authorize]
-        [HttpGet("userData/{actualUsername}")]
-        public async Task<ActionResult<User>> GetUserData(string actualUsername) {
-            var selectUser = await _dbContext.Users.Where(x => x.Username == actualUsername).FirstOrDefaultAsync();
-            return Ok(selectUser);
+        [HttpGet("getUserWithId/{userId}")]
+        public async Task<ActionResult<User>> GetUserWithId(int userId) {
+            User resultUser = await _dbContext.Users.FindAsync(userId);
+            if(resultUser == null) {
+                return NotFound("A felhasználó nem található.");
+            }
+
+            return Ok(resultUser);
         }
 
         [HttpPost("login")]

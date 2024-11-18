@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.DAL.Model;
 
-namespace API.DAL.Model;
-
-public partial class Match
-{
+public partial class Match {
     public int Id { get; set; }
 
     public string HomeName { get; set; } = null!;

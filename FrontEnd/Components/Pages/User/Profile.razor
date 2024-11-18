@@ -16,6 +16,15 @@
     <p>Loading...</p>
     @errorMessage
 } else {
+    @accessToken
+    <br/>
+    @userId
+    <br />
+    @editUser.Id
+    <br />
+    @actualUsername
+    <br />
+    @editUser.Username
     <div class="row">
         <div class="col-md-4">
             <EditForm Model="editUser" OnValidSubmit="EditUser" FormName="EditUser" Enhance>
@@ -67,6 +76,9 @@
     [SupplyParameterFromQuery]
     private string accessToken { get; set; }
 
+    [SupplyParameterFromQuery]
+    private string userId { get; set; }
+
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
@@ -82,7 +94,7 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        editUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/userData/{actualUsername}");
+        editUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/getUserWithId/{userId}");
         if(editUser is null) {
             navigationManager.NavigateTo("/error");
         } else {
@@ -108,7 +120,7 @@
 
         if(response.IsSuccessStatusCode) {
             if(actualUsername!=editUser.Username)        
-                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username+"&accessToken="+accessToken);
+                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username+"&accessToken="+accessToken+"&userId="+userId);
             else
                 navigationManager.NavigateTo("/");
         } else {
