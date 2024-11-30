@@ -1,6 +1,9 @@
 ﻿@page "/makeBet"
 
 @using FrontEnd.ViewModel
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager

@@ -129,3 +129,9 @@
         navigationManager.NavigateTo("/pastBets");
     }
 }
+
+@code{
+    protected override async Task OnInitializedAsync() {
+        StateHasChanged();
+    }
+}

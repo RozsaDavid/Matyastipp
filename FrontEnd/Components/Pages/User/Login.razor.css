@@ -1,0 +1,51 @@
+﻿.login-box {
+    text-align: center;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    margin: auto;
+    margin-top: 20px;
+    border: solid 3px #f1f1ef;
+    border-radius: 25px;
+    box-shadow: 5px 5px 10px black;
+}
+
+.login-box-form{
+    width: 300px;
+}
+
+    h3 {
+        color: #f1f1ef;
+        text-shadow: 5px 5px 10px black;
+        font-size: 45px;
+        font-family: Verdana;
+        font-weight: bold;
+        padding-top: 20px;
+    }
+
+    .login-box-form button {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 250px;
+        font-size: 20px;
+        font-family: Verdana;
+        font-weight: bold;
+    }
+
+    .form-label {
+        color: #f1f1ef;
+        text-shadow: 5px 5px 10px black;
+        font-family: Verdana;
+        font-weight: bold;
+        padding-top: 20px;
+    }
+
+    .text-danger {
+        color: darkred !important;
+        font-family: Verdana;
+        font-weight: bold;
+        padding-top: 20px;
+    }

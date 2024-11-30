@@ -11,6 +11,7 @@ nav {
 }
 
     nav ul{
+        width: 800px;
         display: flex;
         margin: 0;
         padding: 0 100px;
@@ -68,38 +69,38 @@ nav {
                     background-color: rgb(193,148,52);
                 }
 
-@media screen and (max-width: 650px) {
-    nav, nav ul {
+@media screen and (max-width: 700px) {
+    nav, nav ul{
+        padding: 0;
+        height: auto;
+        min-height: 50px;
         display: flex;
         flex-direction: column;
-        height: auto;
-        padding: 0;
+        width: 100%;
     }
 
-        .orderSide {
-            align-items: center;
-        }
+    .orderSide {
+        align-items: center;
+    }
 
-        nav ul li a{
+        nav ul li,nav ul li a{
             width: 50vw;
-            border: none;
         }
 
-
-            .submenu_active{
-                margin-left: 50vw;
-                padding: 0;
-                top: 0;
-             }
-
-                .submenu_active a {
+                .submenu_active {
                     margin: 0;
-                    border: none;
-                    border-left: solid 2px #f1f1ef;
+                    padding: 0;
+                    top: 0;
+                    margin-left: 50vw;
+
                 }
 
+                    .submenu_active a {
+                        border: none;
+                        border-left: solid 2px #f1f1ef;
+                    }
+
     nav ul li ul li a {
-        margin-left: 50vw;
         background-color: #8B4513;
     }
 

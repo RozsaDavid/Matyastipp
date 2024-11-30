@@ -3,11 +3,14 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
-@using System.Security.Cryptography
-@using FrontEnd.ViewModel
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+
+<h3>Betöltés...</h3>
 
 @code {
     [CascadingParameter]
@@ -24,12 +27,13 @@
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
+        
+        //Kijelentkezés
         if(httpContext.User.Identity.IsAuthenticated) {
-
             await httpContext.SignOutAsync();
-
         }
 
+        //Új adatok létrehozása a megváltoztatott felhasználóhoz
         var claims = new List<Claim>{
                 new Claim(ClaimTypes.Name, actualUsername),
                 new Claim("token", accessToken),
@@ -39,6 +43,7 @@
         ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
+        //Bejelentkezés
         await httpContext.SignInAsync(principal);
 
         navigationManager.NavigateTo("/");

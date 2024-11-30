@@ -29,9 +29,16 @@
 </header>
 
 <div class="page">
-    <div>
-        <NavMenu />
-    </div>
+    <AuthorizeView>
+        <NotAuthorized>
+            <div class="placeholder"/>
+        </NotAuthorized>
+        <Authorized>
+            <div>
+                <NavMenu />
+            </div>
+        </Authorized>
+    </AuthorizeView>
 
     <main>
         <article>

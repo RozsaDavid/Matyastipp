@@ -6,66 +6,66 @@
 @using System.Security.Cryptography
 @using System.Text
 @using FrontEnd.ViewModel
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+
 @rendermode InteractiveServer
 
-<h3>Profil</h3>
+
 @if(editUser is null) {
-    <p>Loading...</p>
+    <h3>Betöltés...</h3>
     @errorMessage
 } else {
-    @accessToken
-    <br/>
-    @userId
-    <br />
-    @editUser.Id
-    <br />
-    @actualUsername
-    <br />
-    @editUser.Username
     <div class="row">
-        <div class="col-md-4">
+        <div class="profile-box">
+        <h3>Profil</h3>
+        <div class="profile-box-form">
             <EditForm Model="editUser" OnValidSubmit="EditUser" FormName="EditUser" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger" />
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="username" class="form-label">Felhasználónév</label>
                     <InputText id="username" @bind-Value="editUser.Username" class="form-control" />
                     <ValidationMessage For="()=>editUser.Username" class="text-danger" />
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="realname" class="form-label">Valós név</label>
                     <InputText id="realname" @bind-Value="editUser.RealName" class="form-control" />
                     <ValidationMessage For="()=>editUser.RealName" class="text-danger" />
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="email" class="form-label">E-mail</label>
                     <InputText id="email" @bind-Value="editUser.Email" class="form-control" />
                     <ValidationMessage For="()=>editUser.Email" class="text-danger" />
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="password" class="form-label">Jelszó</label>
-                    <InputText id="password" @bind-Value="editUser.Password" class="form-control" />
+                    <InputText type="password" id="password" @bind-Value="editUser.Password" class="form-control" />
                     <ValidationMessage For="()=>editUser.Password" class="text-danger" />
                 </div>
 
-                <div class="mb-3 text-center">
+                <div class="mb-1 text-center">
                     <span class="text-danger">@errorMessage</span>
                 </div>
 
-                <button type="submit" class="btn btn-primary md-4">Mentés</button>
-                <a href="/" class="btn btn-success">Vissza</a>
+                <button type="submit" class="btn btn-success md-4">Mentés</button>
             </EditForm>
+            <button type="submit" class="btn btn-danger md-4" onclick="@InactivateUser">Fiók inaktiválása</button>
+            <a href="/" class="btn btn-primary">Vissza</a>
+        </div>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary md-4" onclick="@InactivateUser">Fiók inaktiválása</button>
+    
 }
 
 @code {
@@ -108,10 +108,12 @@
             return;
         }
 
+        //megadott jelszó hashelése
         var source = Encoding.UTF8.GetBytes(editUser.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         editUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
+        //új felhasználói adatok mentése
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
@@ -119,16 +121,22 @@
         editUser.Password = string.Empty;
 
         if(response.IsSuccessStatusCode) {
+            //ha változott a felhasználónév akkor a Claim frissítéséhez átirányítás
             if(actualUsername!=editUser.Username)        
                 navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username+"&accessToken="+accessToken+"&userId="+userId);
             else
                 navigationManager.NavigateTo("/");
         } else {
             errorMessage = await response.Content.ReadAsStringAsync();
+            errorMessage = errorMessage.Replace("\"", string.Empty);
         }
     }
 
     private async Task InactivateUser() {
+        //megerősítés
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Biztosan inaktiválni akarod a fiókod?"); 
+
+        if(confirmed) {
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
@@ -138,6 +146,7 @@
             } else {
                 errorMessage = await response.Content.ReadAsStringAsync();
             }
+        }
     }
 }
 

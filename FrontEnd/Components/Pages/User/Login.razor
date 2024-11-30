@@ -10,13 +10,10 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<h3>Bejelentkezés</h3>
-<hr />
-
 <div class="row">
-    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
-        <h3>Login</h3>
-
+    <div class="login-box">
+        <h3>Bejelentkezés</h3>
+        <div class="login-box-form">
         <EditForm Model="loginModel" FormName="LoginForm" OnValidSubmit="Authenticate" Enhance>
             <DataAnnotationsValidator />
 
@@ -33,10 +30,11 @@
             <div class="mb-3 text-center">
                 <span class="text-danger">@errorMessage</span>
             </div>
-
+        
             <button type="submit" class="btn btn-primary">Bejelentkezés</button>
 
         </EditForm>
+        </div>
     </div>
 </div>
 
@@ -52,7 +50,7 @@
     public string? errorMessage;
 
     private async Task Authenticate() {
-        //jelszó kódolása
+        //jelszó titkosítása
         var source = Encoding.UTF8.GetBytes(loginModel.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
         loginModel.Password = BitConverter.ToString(hashBytes).Replace("-", "");
@@ -60,7 +58,7 @@
         //adatok előkészítése az apinak
         string[] userData = { loginModel.Username, loginModel.Password };
         loginModel.Password = String.Empty;
-        //api
+        //api hívás
         var response = await httpClient.PostAsJsonAsync("api/user/login", userData);
 
         //felhasználó bejelentkeztetése
@@ -77,9 +75,9 @@
             //Ha ez működik akkor jó a token (duplaellenőrzés)
             var user = await httpClient.GetFromJsonAsync<UserVM>("api/user/getUserWithToken");
 
-            //ha jó, akkor bejelentkezés és token mentése Claim-ként
+            //ha jó, akkor bejelentkezés és token és adatok mentése Claim-ként
             if (user != null){
-                
+
                 var claims = new List<Claim>{
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim("token", accessToken),
@@ -90,9 +88,8 @@
                 ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
                 await httpContext.SignInAsync(principal);
-                              
-                httpContext.Response.Redirect("Home");
-                navigationManager.NavigateTo("/");
+
+                httpContext.Response.Redirect("/");
             } else {
                 errorMessage = "Hiba a bejelentkezés során.";
             }

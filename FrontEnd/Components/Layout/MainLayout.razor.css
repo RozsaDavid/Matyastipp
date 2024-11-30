@@ -21,6 +21,7 @@ header {
 
         p{
             height: 30px;
+            width:225px;
         }
 
     header .left-side{
@@ -29,6 +30,7 @@ header {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 320px;
     }
         .left-side-menu {
             margin-top: 50px;
@@ -54,6 +56,7 @@ header {
                 color: #f1f1ef;
                 font-family: Verdana;
                 font-weight: bold;
+                width: 150px;
             }
 
             .btn-primary {
@@ -72,12 +75,26 @@ header {
                     transition-delay: 0s, 0s, 0s, 0s;
                 }
 
-@media screen and (max-width: 650px) {
+.placeholder {
+    width: 100%;
+    height: 50px;
+    background: rgb(193,148,52);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    border-top: solid 2px;
+    border-bottom: solid 2px;
+    border-color: #f1f1ef;
+    cursor: default;
+}
+
+@media screen and (max-width: 600px) {
     header .logo {
         font-size: 14px;
     }
 
     .left-side-buttons {
+        width: 200px;
         display: flex;
         flex-direction: column;
         align-self: flex-end;

@@ -1,0 +1,87 @@
+﻿.registration-box {
+    text-align: center;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    margin: auto;
+    margin-top: 20px;
+    border: solid 3px #f1f1ef;
+    border-radius: 25px;
+    box-shadow: 5px 5px 10px black;
+}
+
+.registration-box-form {
+    width: 300px;
+}
+
+h3 {
+    color: #f1f1ef;
+    text-shadow: 5px 5px 10px black;
+    font-size: 45px;
+    font-family: Verdana;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+.registration-box-form button {
+    margin-top: 15px;
+    width: 250px;
+    font-size: 20px;
+    font-family: Verdana;
+    font-weight: bold;
+}
+
+.registration-box-form a {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 250px;
+    font-size: 20px;
+    font-family: Verdana;
+    font-weight: bold;
+}
+
+.btn-danger {
+    background-color: darkred;
+}
+
+    .btn-danger:hover {
+        background-color: red;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
+    }
+
+.btn-primary {
+    background-color: #8B4513;
+    border-color: #8B4513;
+}
+
+    .btn-primary:hover {
+        background-color: #68340e;
+        border-color: #68340e;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
+    }
+
+.form-label {
+    color: #f1f1ef;
+    text-shadow: 5px 5px 10px black;
+    font-family: Verdana;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+.text-danger {
+    color: darkred !important;
+    font-family: Verdana;
+    font-weight: bold;
+    padding-top: 15px;
+}
