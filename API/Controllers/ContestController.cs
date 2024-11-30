@@ -23,77 +23,78 @@ namespace API.Controllers {
 
         [HttpGet("userContests/{userId}")]
         public async Task<ActionResult<List<Contest>>> GetUserContests(int userId) {
-            List<Contest> allUsersContests = new List<Contest>();
+            List<Contest> usersAllContests = new List<Contest>();
 
-            List<int> usersContestsId = new List<int>();
+            List<int> usersContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             foreach(var standing in standings) {
                 if(standing.UserId == userId)
-                    usersContestsId.Add(standing.ContestId);
+                    usersContestsIds.Add(standing.ContestId);
             }
 
-            if(usersContestsId.Count == 0)
-                return Ok(allUsersContests);
+            if(usersContestsIds.Count == 0)
+                return Ok(usersAllContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
-                if(usersContestsId.Contains(contest.Id))
-                    allUsersContests.Add(contest);
+                if(usersContestsIds.Contains(contest.Id))
+                    usersAllContests.Add(contest);
             }
 
-            return Ok(allUsersContests);
+            return Ok(usersAllContests);
         }
 
         [HttpGet("userOngoingContests/{userId}")]
         public async Task<ActionResult<List<Contest>>> GetUserOngoingContests(int userId) {
-            List<Contest> allUsersContests = new List<Contest>();
+            List<Contest> usersAllContests = new List<Contest>();
 
-            List<int> usersContestsId = new List<int>();
+            List<int> usersContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             foreach(var standing in standings) {
                 if(standing.UserId == userId)
-                    usersContestsId.Add(standing.ContestId);
+                    usersContestsIds.Add(standing.ContestId);
             }
 
-            if(usersContestsId.Count == 0)
-                return Ok(allUsersContests);
+            if(usersContestsIds.Count == 0)
+                return Ok(usersAllContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
-                if(usersContestsId.Contains(contest.Id) && contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
-                    allUsersContests.Add(contest);
+                if(usersContestsIds.Contains(contest.Id) &&
+                    contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
+                    usersAllContests.Add(contest);
             }
 
-            return Ok(allUsersContests);
+            return Ok(usersAllContests);
         }
 
         [HttpGet("availableUpcomingContest/{userId}")]
         public async Task<ActionResult<List<Contest>>> GetAvailableUpcomingContests(int userId) {
             List<Contest> upcomingContests = new List<Contest>();
 
-            List<int> availableContestsId = new List<int>();
+            List<int> availableContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             var contests = _dbContext.Contests.ToList();
 
             foreach(var contest in contests) {
                 if(contest.StartDate > DateTime.Now && contest.IsOpened == 1)
-                    availableContestsId.Add(contest.Id);
+                    availableContestsIds.Add(contest.Id);
             }
 
             foreach(var standing in standings) {
-                if(standing.UserId == userId && availableContestsId.Contains(standing.ContestId))
-                    availableContestsId.Remove(standing.ContestId);
+                if(standing.UserId == userId && availableContestsIds.Contains(standing.ContestId))
+                    availableContestsIds.Remove(standing.ContestId);
             }
 
-            if(availableContestsId.Count == 0)
+            if(availableContestsIds.Count == 0)
                 return Ok(upcomingContests);
 
 
             foreach(var contest in contests) {
-                if(availableContestsId.Contains(contest.Id))
+                if(availableContestsIds.Contains(contest.Id))
                     upcomingContests.Add(contest);
             }
 
@@ -104,20 +105,20 @@ namespace API.Controllers {
         public async Task<ActionResult<List<Contest>>> GetUpcomingContests(int userId) {
             List<Contest> upcomingContests = new List<Contest>();
 
-            List<int> usersContestsId = new List<int>();
+            List<int> usersContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             foreach(var standing in standings) {
                 if(standing.UserId == userId)
-                    usersContestsId.Add(standing.ContestId);
+                    usersContestsIds.Add(standing.ContestId);
             }
 
-            if(usersContestsId.Count == 0)
+            if(usersContestsIds.Count == 0)
                 return Ok(upcomingContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
-                if(usersContestsId.Contains(contest.Id))
+                if(usersContestsIds.Contains(contest.Id))
                     if(contest.StartDate > DateTime.Now)
                         upcomingContests.Add(contest);
             }
@@ -129,27 +130,27 @@ namespace API.Controllers {
         public async Task<ActionResult<List<Contest>>> GetAvailableOngoingContests(int userId) {
             List<Contest> upcomingContests = new List<Contest>();
 
-            List<int> availableContestsId = new List<int>();
+            List<int> availableContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             var contests = _dbContext.Contests.ToList();
 
             foreach(var contest in contests) {
                 if(contest.StartDate < DateTime.Now && contest.IsOpened == 1)
-                    availableContestsId.Add(contest.Id);
+                    availableContestsIds.Add(contest.Id);
             }
 
             foreach(var standing in standings) {
-                if(standing.UserId == userId && availableContestsId.Contains(standing.ContestId))
-                    availableContestsId.Remove(standing.ContestId);
+                if(standing.UserId == userId && availableContestsIds.Contains(standing.ContestId))
+                    availableContestsIds.Remove(standing.ContestId);
             }
 
-            if(availableContestsId.Count == 0)
+            if(availableContestsIds.Count == 0)
                 return Ok(upcomingContests);
 
 
             foreach(var contest in contests) {
-                if(availableContestsId.Contains(contest.Id))
+                if(availableContestsIds.Contains(contest.Id))
                     upcomingContests.Add(contest);
             }
 
@@ -160,20 +161,20 @@ namespace API.Controllers {
         public async Task<ActionResult<List<Contest>>> GetOngoingContests(int userId) {
             List<Contest> ongoingContests = new List<Contest>();
 
-            List<int> usersContestsId = new List<int>();
+            List<int> usersContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             foreach(var standing in standings) {
                 if(standing.UserId == userId)
-                    usersContestsId.Add(standing.ContestId);
+                    usersContestsIds.Add(standing.ContestId);
             }
 
-            if(usersContestsId.Count == 0)
+            if(usersContestsIds.Count == 0)
                 return Ok(ongoingContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
-                if(usersContestsId.Contains(contest.Id))
+                if(usersContestsIds.Contains(contest.Id))
                     if(contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
                         ongoingContests.Add(contest);
             }
@@ -185,20 +186,20 @@ namespace API.Controllers {
         public async Task<ActionResult<List<Contest>>> GetPastContests(int userId) {
             List<Contest> pastContests = new List<Contest>();
 
-            List<int> usersContestsId = new List<int>();
+            List<int> usersContestsIds = new List<int>();
 
             var standings = _dbContext.Standings.ToList();
             foreach(var standing in standings) {
                 if(standing.UserId == userId)
-                    usersContestsId.Add(standing.ContestId);
+                    usersContestsIds.Add(standing.ContestId);
             }
 
-            if(usersContestsId.Count == 0)
+            if(usersContestsIds.Count == 0)
                 return Ok(pastContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
-                if(usersContestsId.Contains(contest.Id))
+                if(usersContestsIds.Contains(contest.Id))
                     if(contest.EndDate < DateTime.Now)
                         pastContests.Add(contest);
             }
@@ -208,7 +209,7 @@ namespace API.Controllers {
 
         [HttpGet("standing/{contestId}")]
         public async Task<ActionResult<List<string>>> GetContestStanding(int contestId) {
-            List<string> result = new List<string>();
+            List<string> contestsStandingsList = new List<string>();
 
             var standings = _dbContext.Standings.ToList();
             var users = _dbContext.Users.ToList();
@@ -216,24 +217,23 @@ namespace API.Controllers {
                 if(standing.ContestId == contestId)
                     foreach(var user in users)
                         if(standing.UserId == user.Id)
-                            result.Add(user.Username + ";" + standing.Points.ToString());
+                            contestsStandingsList.Add(user.Username + ";" + standing.Points.ToString());
 
 
-            if(result.Count() == 0)
+            if(contestsStandingsList.Count() == 0)
                 return BadRequest();
 
-            return Ok(result);
+            return Ok(contestsStandingsList);
         }
 
         [HttpGet("openedMatches/{contestId}/{userId}")]
         public async Task<ActionResult<List<Match>>> GetOpenedMatches(int contestId, int userId) {
 
-            //var users = _dbContext.Standings.ToList();
             var matches = _dbContext.Matches.ToList();
             var bets = _dbContext.Bets.ToList();
             var inContests = _dbContext.Incontests.ToList();
 
-            var result = new List<Match>();
+            var allOpenedMatchesForUserInContest = new List<Match>();
 
             foreach(var inContest in inContests)
                 if(inContest.ContestId == contestId) {
@@ -249,11 +249,11 @@ namespace API.Controllers {
                         }
 
                         if(!isThereAUserBet)
-                            result.Add(actualMatch);
+                            allOpenedMatchesForUserInContest.Add(actualMatch);
                     }
                 }
 
-            return Ok(result);
+            return Ok(allOpenedMatchesForUserInContest);
         }
 
         [HttpGet("closedMatches/{contestId}")]
@@ -280,13 +280,13 @@ namespace API.Controllers {
             standing.Contest = await _dbContext.Contests.FindAsync(standing.ContestId);
 
             if(standing.Contest.IsOpened == 0)
-                return BadRequest("Valami nem jó.");
+                return BadRequest("A tippverseny nincs nyitva.");
 
             var standings = _dbContext.Standings.ToList();
 
             foreach(var standingFor in standings) {
                 if(standingFor.ContestId == standing.ContestId && standingFor.UserId == standing.UserId)
-                    return BadRequest("Valami nem jó.");
+                    return BadRequest("A felhasználó már nevezett a tippversenyre.");
             }
 
             _dbContext.Standings.Add(standing);
