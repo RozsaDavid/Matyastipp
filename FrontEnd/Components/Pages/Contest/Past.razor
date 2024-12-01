@@ -3,19 +3,42 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 
-<h3>Lezajlott tippversenyeim</h3>
-
-<p>
-    @foreach(var contest in pastContestsList) {
-        @contest.Name
-        <a href="/standings?contestId=@contest.Id" class="btn btn-success">Ranglista</a>
-        <br />
+<div class="table-container">
+    @if(pastContestsList is null) {
+        <h3>Betöltés...</h3>
+    } else {
+        @if(pastContestsList.Count == 0) {
+            <h3>Nincsenek lezajlott tippversenyeid.</h3>
+        } else {
+            <h3>Lezajlott tippversenyeid</h3>
+            <table>
+                <tr>
+                    <th>Név</th>
+                    <th>Kezdés</th>
+                    <th>Befejezés</th>
+                    <th></th>
+                </tr>
+                @foreach(var contest in pastContestsList) {
+                    <tr>
+                        <td style="word-break: break-all;">@contest.Name</td>
+                        <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td><a href="@($"standings?contestId={contest.Id}")" class="btn btn-success">Ranglista</a></td>
+                    </tr>
+                }
+            </table>
+            <div class="mb-1 text-center">
+                <span class="text-danger">@errorMessage</span>
+            </div>
+        }
     }
-</p>
+</div>
 
 @code {
     [CascadingParameter]
@@ -23,6 +46,7 @@
 
     List<ContestVM> pastContestsList = new();
 
+    string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
@@ -32,6 +56,6 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        pastContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/pastContest/{userId}");
+        pastContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userPastContests/{userId}");
     }
 }

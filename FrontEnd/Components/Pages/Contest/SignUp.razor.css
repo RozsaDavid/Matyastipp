@@ -1,0 +1,33 @@
+﻿h3 {
+    color: #f1f1ef;
+    text-shadow: 5px 5px 10px black;
+    font-size: 45px;
+    font-family: Verdana;
+    font-weight: bold;
+    text-align: center;
+}
+
+.table-container {
+    width: 70%;
+    align-self: center;
+    margin: auto;
+    margin-top: 50px;
+    padding: 50px;
+    border: solid 3px #f1f1ef;
+    border-radius: 25px;
+    box-shadow: 5px 5px 10px black;
+}
+
+.text-danger {
+    color: darkred !important;
+    font-family: Verdana;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+@media screen and (max-width: 850px) {
+    h3 {
+        font-size: 20px;
+    }
+
+}

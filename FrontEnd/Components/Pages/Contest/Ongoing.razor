@@ -3,27 +3,52 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 
-<h3>Folyamatban lévő tippversenyeim</h3>
-
-<p>
-    @foreach(var contest in ongoingContestsList) {
-        @contest.Name
-        <a href="/standings?contestId=@contest.Id" class="btn btn-success">Ranglista</a>
-        <a href="/openedMatches?contestId=@contest.Id" class="btn btn-success">Nyitott meccsek</a>
-        <br />
+<div class="table-container">
+    @if(ongoingContestsList is null) {
+        <h3>Betöltés...</h3>
+    } else {
+        @if(ongoingContestsList.Count == 0) {
+            <h3>Nincsenek folyamatban lévő tippversenyeid.</h3>
+        } else {
+            <h3>Folyamatban lévő tippversenyeid</h3>
+            <table>
+                <tr>
+                    <th>Név</th>
+                    <th>Kezdés</th>
+                    <th>Befejezés</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach(var contest in ongoingContestsList) {
+                    <tr>
+                        <td style="word-break: break-all;">@contest.Name</td>
+                        <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td><a href="@($"standings?contestId={contest.Id}")" class="btn btn-success">Ranglista</a></td>
+                        <td><a href="@($"openedMatches?contestId={contest.Id}")" class="btn btn-success">Nyitott meccsek</a></td>
+                    </tr>
+                }
+            </table>
+            <div class="mb-1 text-center">
+                <span class="text-danger">@errorMessage</span>
+            </div>
+        }
     }
-</p>
+</div>
 
 @code {
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-
     List<ContestVM> ongoingContestsList = new();
+
+    string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
@@ -32,6 +57,6 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/ongoingContest/{userId}");
+        ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
     }
 }

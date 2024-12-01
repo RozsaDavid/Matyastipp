@@ -7,45 +7,44 @@
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+
 @rendermode InteractiveServer
 
-<h3>Profil</h3>
+@if(actualUser is null || actualMatch is null) {
+    <h3>Betöltés...</h3>
+    <div class="mb-3 text-center">
+        @errorMessage
+    </div>
+}else{
+    <div class="row">
+        <div class="bet-box">
+            <h3>Tipp leadása</h3>
+            <div class="bet-box-form">
+                <EditForm Model="newBet" OnValidSubmit="NewBet" FormName="NewBet" Enhance>
+                    <DataAnnotationsValidator />
 
-@if(actualUser is null) {
-    <p>Loading...</p>
-    @errorMessage
-    }else{
-<p>@actualUser.Username</p>
-<p>@actualUser.Id</p>
+                    <div class="mb-3">
+                        <label for="homeTeam" class="form-label">@homeTeam:</label>
+                        <InputNumber id="homeTeam" @bind-Value="newBet.HomeGoals" class="form-control" />
+                        <ValidationMessage For="()=>newBet.HomeGoals" class="text-danger" />
+                    </div>
 
-<div class="row">
-        <div class="col-md-4">
-            <EditForm Model="newBet" OnValidSubmit="NewBet" FormName="NewBet" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
+                    <div class="mb-3">
+                        <label for="guestTeam" class="form-label">@guestTeam</label>
+                        <InputNumber id="guestTeam" @bind-Value="newBet.GuestGoals" class="form-control" />
+                        <ValidationMessage For="()=>newBet.GuestGoals" class="text-danger" />
+                    </div>
 
-                <div class="mb-3">
-                    <label for="homeTeam" class="form-label">@homeTeam</label>
-                    <InputNumber id="homeTeam" @bind-Value="newBet.HomeGoals" class="form-control" />
-                    <ValidationMessage For="()=>newBet.HomeGoals" class="text-danger" />
-                </div>
+                    <div class="mb-3 text-center">
+                        <span class="text-danger">@errorMessage</span>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="guestTeam" class="form-label">@guestTeam</label>
-                    <InputNumber id="guestTeam" @bind-Value="newBet.GuestGoals" class="form-control" />
-                    <ValidationMessage For="()=>newBet.GuestGoals" class="text-danger" />
-                </div>
-
-                <div class="mb-3 text-center">
-                    <span class="text-danger">@errorMessage</span>
-                </div>
-
-                <button type="submit" class="btn btn-primary md-4">Mentés</button>
-                <a href="/" class="btn btn-success">Vissza</a>
-            </EditForm>
+                    <button type="submit" class="btn btn-success md-4">Mentés</button>
+                    <a href="@prevPage" class="btn btn-primary">Vissza</a>
+                </EditForm>
+            </div>
         </div>
     </div>
-   
 }
 
 @code {
@@ -80,14 +79,7 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         actualUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/getUserWithToken");
-        if(actualUser is null) {
-            navigationManager.NavigateTo("/error");
-        }
-
         actualMatch = await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{matchId}");
-        if(actualMatch is null) {
-            navigationManager.NavigateTo("/error");
-        }
 
         newBet = new BetVM();
         newBet.MatchId=matchId;

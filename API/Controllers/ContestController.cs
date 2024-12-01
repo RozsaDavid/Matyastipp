@@ -45,9 +45,9 @@ namespace API.Controllers {
             return Ok(usersAllContests);
         }
 
-        [HttpGet("userOngoingContests/{userId}")]
-        public async Task<ActionResult<List<Contest>>> GetUserOngoingContests(int userId) {
-            List<Contest> usersAllContests = new List<Contest>();
+        [HttpGet("userPastContests/{userId}")]
+        public async Task<ActionResult<List<Contest>>> GetPastContests(int userId) {
+            List<Contest> usersPastContests = new List<Contest>();
 
             List<int> usersContestsIds = new List<int>();
 
@@ -58,16 +58,66 @@ namespace API.Controllers {
             }
 
             if(usersContestsIds.Count == 0)
-                return Ok(usersAllContests);
+                return Ok(usersPastContests);
+
+            var contests = _dbContext.Contests.ToList();
+            foreach(var contest in contests) {
+                if(usersContestsIds.Contains(contest.Id))
+                    if(contest.EndDate < DateTime.Now)
+                        usersPastContests.Add(contest);
+            }
+
+            return Ok(usersPastContests);
+        }
+
+        [HttpGet("userOngoingContests/{userId}")]
+        public async Task<ActionResult<List<Contest>>> GetUserOngoingContests(int userId) {
+            List<Contest> usersOngoingContests = new List<Contest>();
+
+            List<int> usersContestsIds = new List<int>();
+
+            var standings = _dbContext.Standings.ToList();
+            foreach(var standing in standings) {
+                if(standing.UserId == userId)
+                    usersContestsIds.Add(standing.ContestId);
+            }
+
+            if(usersContestsIds.Count == 0)
+                return Ok(usersOngoingContests);
 
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
                 if(usersContestsIds.Contains(contest.Id) &&
                     contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
-                    usersAllContests.Add(contest);
+                    usersOngoingContests.Add(contest);
             }
 
-            return Ok(usersAllContests);
+            return Ok(usersOngoingContests);
+        }
+
+        [HttpGet("userUpcomingContests/{userId}")]
+        public async Task<ActionResult<List<Contest>>> GetUpcomingContests(int userId) {
+            List<Contest> upcomingContests = new List<Contest>();
+
+            List<int> usersContestsIds = new List<int>();
+
+            var standings = _dbContext.Standings.ToList();
+            foreach(var standing in standings) {
+                if(standing.UserId == userId)
+                    usersContestsIds.Add(standing.ContestId);
+            }
+
+            if(usersContestsIds.Count == 0)
+                return Ok(upcomingContests);
+
+            var contests = _dbContext.Contests.ToList();
+            foreach(var contest in contests) {
+                if(usersContestsIds.Contains(contest.Id))
+                    if(contest.StartDate > DateTime.Now)
+                        upcomingContests.Add(contest);
+            }
+
+            return Ok(upcomingContests);
         }
 
         [HttpGet("availableUpcomingContest/{userId}")]
@@ -101,31 +151,6 @@ namespace API.Controllers {
             return Ok(upcomingContests);
         }
 
-        [HttpGet("upcomingContest/{userId}")]
-        public async Task<ActionResult<List<Contest>>> GetUpcomingContests(int userId) {
-            List<Contest> upcomingContests = new List<Contest>();
-
-            List<int> usersContestsIds = new List<int>();
-
-            var standings = _dbContext.Standings.ToList();
-            foreach(var standing in standings) {
-                if(standing.UserId == userId)
-                    usersContestsIds.Add(standing.ContestId);
-            }
-
-            if(usersContestsIds.Count == 0)
-                return Ok(upcomingContests);
-
-            var contests = _dbContext.Contests.ToList();
-            foreach(var contest in contests) {
-                if(usersContestsIds.Contains(contest.Id))
-                    if(contest.StartDate > DateTime.Now)
-                        upcomingContests.Add(contest);
-            }
-
-            return Ok(upcomingContests);
-        }
-
         [HttpGet("availableOngoingContest/{userId}")]
         public async Task<ActionResult<List<Contest>>> GetAvailableOngoingContests(int userId) {
             List<Contest> upcomingContests = new List<Contest>();
@@ -136,7 +161,8 @@ namespace API.Controllers {
             var contests = _dbContext.Contests.ToList();
 
             foreach(var contest in contests) {
-                if(contest.StartDate < DateTime.Now && contest.IsOpened == 1)
+                if(contest.StartDate < DateTime.Now &&
+                    contest.EndDate > DateTime.Now && contest.IsOpened == 1)
                     availableContestsIds.Add(contest.Id);
             }
 
@@ -155,56 +181,6 @@ namespace API.Controllers {
             }
 
             return Ok(upcomingContests);
-        }
-
-        [HttpGet("ongoingContest/{userId}")]
-        public async Task<ActionResult<List<Contest>>> GetOngoingContests(int userId) {
-            List<Contest> ongoingContests = new List<Contest>();
-
-            List<int> usersContestsIds = new List<int>();
-
-            var standings = _dbContext.Standings.ToList();
-            foreach(var standing in standings) {
-                if(standing.UserId == userId)
-                    usersContestsIds.Add(standing.ContestId);
-            }
-
-            if(usersContestsIds.Count == 0)
-                return Ok(ongoingContests);
-
-            var contests = _dbContext.Contests.ToList();
-            foreach(var contest in contests) {
-                if(usersContestsIds.Contains(contest.Id))
-                    if(contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
-                        ongoingContests.Add(contest);
-            }
-
-            return Ok(ongoingContests);
-        }
-
-        [HttpGet("pastContest/{userId}")]
-        public async Task<ActionResult<List<Contest>>> GetPastContests(int userId) {
-            List<Contest> pastContests = new List<Contest>();
-
-            List<int> usersContestsIds = new List<int>();
-
-            var standings = _dbContext.Standings.ToList();
-            foreach(var standing in standings) {
-                if(standing.UserId == userId)
-                    usersContestsIds.Add(standing.ContestId);
-            }
-
-            if(usersContestsIds.Count == 0)
-                return Ok(pastContests);
-
-            var contests = _dbContext.Contests.ToList();
-            foreach(var contest in contests) {
-                if(usersContestsIds.Contains(contest.Id))
-                    if(contest.EndDate < DateTime.Now)
-                        pastContests.Add(contest);
-            }
-
-            return Ok(pastContests);
         }
 
         [HttpGet("standing/{contestId}")]

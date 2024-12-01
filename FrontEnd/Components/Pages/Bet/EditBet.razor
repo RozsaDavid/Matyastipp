@@ -1,46 +1,49 @@
 ﻿@page "/editBet"
 
 @using FrontEnd.ViewModel
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-<h3>Tipp szerkesztése</h3>
-
-@if(editBet is null) {
-    <p>Loading...</p>
-    @errorMessage
+@if(actualMatch is null || editBet is null) {
+    <h3>Betöltés...</h3>
+    <div class="mb-3 text-center">
+        @errorMessage
+    </div>
 } else {
-
     <div class="row">
-        <div class="col-md-4">
-            <EditForm Model="editBet" OnValidSubmit="BetEdit" FormName="EditBet" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
+        <div class="bet-box">
+            <h3>Tipp szerkesztése</h3>
+            <div class="bet-box-form">
+                <EditForm Model="editBet" OnValidSubmit="BetEdit" FormName="EditBet" Enhance>
+                    <DataAnnotationsValidator />
 
-                <div class="mb-3">
-                    <label for="homeTeam" class="form-label">@homeTeam</label>
-                    <InputNumber id="homeTeam" @bind-Value="editBet.HomeGoals" class="form-control" />
-                    <ValidationMessage For="()=>editBet.HomeGoals" class="text-danger" />
-                </div>
+                    <div class="mb-3">
+                        <label for="homeTeam" class="form-label">@homeTeam:</label>
+                        <InputNumber id="homeTeam" @bind-Value="editBet.HomeGoals" class="form-control" />
+                        <ValidationMessage For="()=>editBet.HomeGoals" class="text-danger" />
+                    </div>
 
-                <div class="mb-3">
-                    <label for="guestTeam" class="form-label">@guestTeam</label>
-                    <InputNumber id="guestTeam" @bind-Value="editBet.GuestGoals" class="form-control" />
-                    <ValidationMessage For="()=>editBet.GuestGoals" class="text-danger" />
-                </div>
+                    <div class="mb-3">
+                        <label for="guestTeam" class="form-label">@guestTeam</label>
+                        <InputNumber id="guestTeam" @bind-Value="editBet.GuestGoals" class="form-control" />
+                        <ValidationMessage For="()=>editBet.GuestGoals" class="text-danger" />
+                    </div>
 
-                <div class="mb-3 text-center">
-                    <span class="text-danger">@errorMessage</span>
-                </div>
+                    <div class="mb-3 text-center">
+                        <span class="text-danger">@errorMessage</span>
+                    </div>
 
-                <button type="submit" class="btn btn-primary md-4">Mentés</button>
-                <a href="/" class="btn btn-success">Vissza</a>
-            </EditForm>
+                    <button type="submit" class="btn btn-success md-4">Mentés</button>
+                    <a href="@prevPage" class="btn btn-primary">Vissza</a>
+                </EditForm>
+            </div>
         </div>
     </div>
-
 }
 
 @code {
@@ -69,14 +72,7 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         editBet = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithId/{betId}");
-        if(editBet is null) {
-            navigationManager.NavigateTo("/error");
-        }
-
         actualMatch = await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{editBet.MatchId}");
-        if(actualMatch is null) {
-            navigationManager.NavigateTo("/error");
-        }
 
         homeTeam = actualMatch.HomeName;
         guestTeam = actualMatch.GuestName;

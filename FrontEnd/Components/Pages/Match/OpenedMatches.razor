@@ -3,19 +3,43 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 
-<h3>Nyitott meccsek</h3>
+<div class="match-container">
+    @if(openedMatchesList is null) {
+        <h3>Betöltés...</h3>
+    } else {
+        @if(openedMatchesList.Count == 0) {
+            <h3>Nincsenek nyitott mérkőzések</h3>
+        } else {
+                <h3>Nyitott mérkőzések</h3>
+                <table>
+                    <tr>
+                            <th>Hazai csapat</th>
+                            <th>Vendég csapat</th>
+                            <th>Kezdés</th>
+                            <th></th>
+                    </tr>
+                    @foreach(var match in openedMatchesList) {
+                        <tr>
+                            <td style="word-break: break-all;">@match.HomeName</td>
+                            <td style="word-break: break-all;">@match.GuestName</td>
+                            <td>@match.Date.ToString("yyyy. MM. dd. hh:mm")</td>
+                            <td><a href="@($"makeBet?matchId={match.Id}&contestId={contestId}&accessToken={accessToken}&prevPage=/allOpenedMatches")" class="btn btn-success">Tippelés</a></td>
+                        </tr>
+                    }
+                </table>
+        }
 
-<p>
-    @foreach(var match in openedMatchesList) {
-    <p>@match.Id : @match.HomeName : @match.GuestName</p>
-    <a href="/makeBet?matchId=@match.Id&contestId=@contestId&accessToken=@accessToken&prevPage=/openedmatches?contestId=@contestId" class="btn btn-success">Tipp leadása</a>
-    <br />
+        <div class="mb-1 text-center">
+            <span class="text-danger">@errorMessage</span>
+        </div>
     }
-</p>
+</div>
 
 @code {
     [SupplyParameterFromQuery]
@@ -27,6 +51,7 @@
     List<MatchVM> openedMatchesList = new();
 
     string accessToken;
+    string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");

@@ -3,27 +3,49 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<h3>Folyamatban lévő tippversenyek</h3>
-
-<p>
-    @foreach(var contest in upcomingContestsList) {
-        @contest.Name
-        <a href="/signUp?contestId=@contest.Id&prevPage=/signOngoing" class="btn btn-success">Nevezés</a>
-        <br />
+<div class="table-container">
+    @if(ongoingContestsList is null) {
+        <h3>Betöltés...</h3>
+    } else {
+        @if(ongoingContestsList.Count == 0) {
+            <h3>Nincsenek folyamatban lévő nyitott tippversenyek.</h3>
+        } else {
+            <h3>Folyamatban lévő tippversenyek</h3>
+            <table>
+                <tr>
+                    <th>Név</th>
+                    <th>Kezdés</th>
+                    <th>Befejezés</th>
+                    <th></th>
+                </tr>
+                @foreach(var contest in ongoingContestsList) {
+                    <tr>
+                        <td style="word-wrap: break-word;">@contest.Name</td>
+                        <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td><a href="@($"signUp?contestId={contest.Id}&prevPage=/signOngoing")" class="btn btn-success">Nevezés</a></td>
+                    </tr>
+                }
+            </table>
+            <div class="mb-1 text-center">
+                <span class="text-danger">@errorMessage</span>
+            </div>
+        }
     }
-    @errorMessage
-</p>
+</div>
 
 @code {
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<ContestVM> upcomingContestsList = new();
+    List<ContestVM> ongoingContestsList = new();
 
     string userId;
     string errorMessage;
@@ -35,20 +57,7 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableOngoingContest/{userId}");
-    }
-
-    private async Task signContest(int contestId) {
-        string[] signOnData = { userId.ToString(), contestId.ToString() };
-
-        var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
-
-        if(response.IsSuccessStatusCode) {
-            navigationManager.NavigateTo("/signUpcoming");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
-            errorMessage += "Valami nem jó.";
-        }
+        ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableOngoingContest/{userId}");
     }
 }
 

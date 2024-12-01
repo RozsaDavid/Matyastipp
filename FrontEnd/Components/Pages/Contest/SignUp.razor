@@ -3,14 +3,20 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-Nevezés...
+<div class="table-container">
+    <h3>Nevezés...</h3>
 
-@errorMessage
+    <div class="mb-1 text-center">
+        <span class="text-danger">@errorMessage</span>
+    </div>
+</div>
 
 @code {
     [CascadingParameter]
@@ -39,7 +45,6 @@ Nevezés...
             navigationManager.NavigateTo($"{prevPage}");
         } else {
             errorMessage = await response.Content.ReadAsStringAsync();
-            errorMessage += "Valami nem jó.";
         }
     }
 }

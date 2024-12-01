@@ -10,16 +10,36 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<h3>Közelgő tippversenyek</h3>
-
-<p>
-    @foreach(var contest in upcomingContestsList) {
-        @contest.Name
-        <a href="/signUp?contestId=@contest.Id&prevPage=/signUpcoming" class="btn btn-success">Nevezés</a>
-        <br />
+<div class="table-container">
+    @if(upcomingContestsList is null) {
+        <h3>Betöltés...</h3>
+    } else {
+        @if(upcomingContestsList.Count == 0) {
+            <h3>Nincsenek közelgő nyitott tippversenyek.</h3>
+        } else {
+            <h3>Közelgő nyitott tippversenyek</h3>
+            <table>
+                <tr>
+                    <th>Név</th>
+                    <th>Kezdés</th>
+                    <th>Befejezés</th>
+                    <th></th>
+                </tr>
+                @foreach(var contest in upcomingContestsList) {
+                    <tr>
+                        <td style="word-break: break-all;">@contest.Name</td>
+                        <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td><a href="@($"signUp?contestId={contest.Id}&prevPage=/signUpcoming")" class="btn btn-success">Nevezés</a></td>
+                    </tr>
+                }
+            </table>
+            <div class="mb-1 text-center">
+                <span class="text-danger">@errorMessage</span>
+            </div>
+        }
     }
-    @errorMessage
-</p>
+</div>
 
 @code {
     [CascadingParameter]
@@ -38,19 +58,6 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableUpcomingContest/{userId}");
-    }
-
-    private async Task signContest(int contestId) {
-        string[] signOnData = { userId.ToString(), contestId.ToString() };
-
-        var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
-
-        if(response.IsSuccessStatusCode) {
-            navigationManager.NavigateTo("/signUpcoming");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
-            errorMessage += "Valami nem jó.";
-        }
     }
 }
 
