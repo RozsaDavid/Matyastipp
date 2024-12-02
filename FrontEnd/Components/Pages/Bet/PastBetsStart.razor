@@ -1,4 +1,4 @@
-﻿@page "/pastBets"
+﻿@page "/pastBetsStart"
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
@@ -12,51 +12,42 @@
 @if(myBetsToClosedMatchesList is null) {
     <h3>Betöltés...</h3>
 } else {
-        @foreach(var contest in myContestsList) {
-            @if(contest.Id == contestId) {
-            <div class="table-container">
-                <h3>@contest.Name</h3>
-                <table>
-                    <tr>
-                        <th>Hazai csapat</th>
-                        <th>Vendég csapat</th>
-                        <th>Tippelt eredmény</th>
-                        <th>Végeredmény</th>
-                        <th></th>
-                    </tr>
+    @if(myBetsToClosedMatchesList.Count() == 0) {
+        <h3>Nincsenek lezárt tippjeid.</h3>
+    } else {
+        <div class="table-container">
+            <h3>Tippversenyek</h3>
+            <table>
+                <tr>
+                    <th>Tippverseny neve</th>
+                    <th>Kezdete</th>
+                    <th>Vége</th>
+                    <th></th>
+                </tr>
+                @foreach(var contest in myContestsList) {
+                    bool isThereABet = false;
                     @foreach(var bet in myBetsToClosedMatchesList) {
-                        @if(bet.ContestId == contestId)
-                            @foreach(var match in closedMatchesList[i]) {
-                                @if(bet.MatchId == match.Id) {
-                                    <tr>
-                                        <td>@match.HomeName</td>
-                                        <td>@match.GuestName</td>
-                                        <td>@bet.HomeGoals : @bet.GuestGoals</td>
-                                        <td>@match.HomeGoals : @match.GuestGoals</td>
-                                        @if(bet.IsWon==1) {
-                                            <td style="color: green;">Nyert!</td>
-                                        } else {
-                                            <td style="color: red;">Nem nyert!</td>
-                                        }
-                                    </tr>
-                                }
-                            }
+                        @if(bet.ContestId == contest.Id) {
+                            isThereABet = true;
                         }
-                    
-                </table>
-                <a href="pastBetsStart" class="btn btn-primary">Vissza</a>
-            </div>
-            }
-            <div hidden>@(i++)</div>
-        }
+                    }
+                    @if(isThereABet) {
+                        <tr>
+                            <td>@contest.Name</td>
+                            <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                            <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                            <td><a href="@($"pastBets?&contestId={contest.Id}")" class="btn btn-success">Tippek mutatása</a></td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    }
 }
 
 @code {
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
-
-    [SupplyParameterFromQuery]
-    private int contestId { get; set; }
 
     List<ContestVM> myContestsList = new List<ContestVM>();
     List<List<MatchVM>> closedMatchesList = new List<List<MatchVM>>();
@@ -89,9 +80,9 @@
                 BetVM betForMatchInContest = null;
                 try {
                     betForMatchInContest = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
-                } catch(HttpRequestException exc) { }
-
-                if(betForMatchInContest != null)
+                }catch(HttpRequestException exc){}
+                
+                if(betForMatchInContest!= null)
                     myBetsToClosedMatchesList.Add(betForMatchInContest);
             }
             i++;

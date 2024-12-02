@@ -107,3 +107,9 @@ td {
             text-align: center;
         }
 }
+
+@media screen and (max-width: 700px) {
+    .contest-container {
+        width: 90%;
+    }
+}

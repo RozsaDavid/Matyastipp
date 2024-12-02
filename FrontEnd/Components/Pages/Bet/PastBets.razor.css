@@ -16,6 +16,7 @@
     border: solid 3px #f1f1ef;
     border-radius: 25px;
     box-shadow: 5px 5px 10px black;
+    text-align: center;
 }
 
 table {
@@ -53,7 +54,7 @@ td {
     height: auto;
     text-align: center;
     width: 20%;
-    padding: 10px;
+    padding: 5px;
     border-inline: solid 1px #8B4513;
 }
 
@@ -75,6 +76,22 @@ td {
     font-weight: bold;
     padding-top: 15px;
 }
+
+.btn-primary {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    width: 150px;
+}
+
+    .btn-primary:hover {
+        background-color: #68340e;
+        border-color: #68340e;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
+    }
 
 @media screen and (max-width: 850px) {
     h3 {

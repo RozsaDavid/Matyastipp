@@ -3,19 +3,48 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Authentication.Cookies
-
 @using FrontEnd.ViewModel
+
+@attribute [Authorize]
+
 @inject HttpClient httpClient
 
-<h3>Aktív tippjeim</h3>
-
-<p>
-    @for(int i=0;i<myBets.Count(); i++) {
-        <p>@myBets[i].Id , @myBets[i].ContestId , @betsContests[i].Name , @myBets[i].MatchId , @betsMatches[i].HomeName : @myBets[i].HomeGoals , @betsMatches[i].GuestName : @myBets[i].GuestGoals</p>
-        <a href="/editBet?accessToken=@accessToken&prevPage=/activeBets&betId=@myBets[i].Id" class="btn btn-success">Tipp szerkesztése</a>
-        <br />
+@if(myBets is null) {
+    <h3>Betöltés...</h3>
+} else {
+    @if(myBets.Count == 0) {
+        <h3>Nincsenek aktív tippjeid</h3>
+    } else {
+        <div class="bet-container">
+            <h3>Aktív tippek</h3>
+            <table>
+                <tr>
+                    <th>Tippverseny</th>
+                    <th>Hazai csapat</th>
+                    <th>Vendég csapat</th>
+                    <th>Tippelt eredmény</th>
+                    <th>Kezdés</th>
+                    <th></th>
+                </tr>
+                @for(int i=0;i<myBets.Count;i++) {
+                    <tr>
+                        <td style="word-break: break-all;">@betsContests[i].Name</td>
+                        <td style="word-break: break-all;">@betsMatches[i].HomeName</td>
+                        <td style="word-break: break-all;">@betsMatches[i].GuestName</td>
+                        <td>@myBets[i].HomeGoals : @myBets[i].GuestGoals</td>
+                        <td>@betsMatches[i].Date.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td><a href="@($"editBet?accessToken={accessToken}&prevPage=/activeBets&betId={myBets[i].Id}")" class="btn btn-success">Tipp szerkesztése</a></td>
+                    </tr>
+                }
+            </table>
+        </div>
+                
+        <div class="mb-1 text-center">
+            <span class="text-danger">@errorMessage</span>
+        </div>
     }
-</p>
+}
+
 
 @code {
     [CascadingParameter]
@@ -26,6 +55,7 @@
     List<MatchVM> betsMatches = new List<MatchVM>();
 
     string accessToken;
+    string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");
@@ -35,12 +65,12 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         myBets = await httpClient.GetFromJsonAsync<List<BetVM>>($"api/bet/userBets/{userId}");
+
         foreach(var bet in myBets) {
             betsContests.Add(await httpClient.GetFromJsonAsync<ContestVM>($"api/contest/getContestWithId/{bet.ContestId}"));
             betsMatches.Add(await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{bet.MatchId}"));
         }
     }
-    
 }
 
 

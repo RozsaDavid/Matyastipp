@@ -110,8 +110,7 @@ namespace API.Controllers {
                 if(contestId == bet.ContestId && userId == bet.UserId && matchId == bet.MatchId)
                     return Ok(bet);
 
-            Bet emptyBet = new Bet();
-            return Ok(emptyBet);
+            return BadRequest();
         }
     }
 }
