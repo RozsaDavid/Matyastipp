@@ -87,6 +87,8 @@
                 errorMessage = await response.Content.ReadAsStringAsync();
                 return;
             }
+        } catch(NavigationException navEx) {
+            navigationManager.NavigateTo($"{prevPage}");
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }

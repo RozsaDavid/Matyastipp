@@ -6,8 +6,8 @@ namespace FrontEnd.ViewModel {
 
         public string Username { get; set; } = null!;
 
-        /*[RegularExpression(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
-            ErrorMessage = "Adj meg érvényes jelszót! (Minimum 8 karakter, kisbetű, nagybetű, szám és speciális karaktert tartalmaznia kell.)")]*/
+        [RegularExpression(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
+            ErrorMessage = "Adj meg érvényes jelszót! (Minimum 8 karakter, kisbetű, nagybetű, szám és speciális karaktert tartalmaznia kell.)")]
         public string Password { get; set; } = null!;
 
         public string RealName { get; set; } = null!;

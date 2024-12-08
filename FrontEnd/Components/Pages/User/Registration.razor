@@ -70,17 +70,19 @@
         var hashBytes = MD5.Create().ComputeHash(source);
         newUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
-        try{
+        try {
             var response = await httpClient.PostAsJsonAsync("api/user/registration", newUser);
             newUser.Password = string.Empty;
 
-            if(response.IsSuccessStatusCode) {
+            if (response.IsSuccessStatusCode) {
                 navigationManager.NavigateTo("/");
             } else {
                 errorMessage = await response.Content.ReadAsStringAsync();
                 errorMessage = errorMessage.Replace("\"", string.Empty);
             }
-        }catch(Exception ex) {
+        } catch (NavigationException navEx) {
+            navigationManager.NavigateTo("/");
+        } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }
         

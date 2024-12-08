@@ -47,6 +47,8 @@
             } else {
                 errorMessage = await response.Content.ReadAsStringAsync();
             }
+        } catch(NavigationException navEx) {
+            navigationManager.NavigateTo($"{prevPage}");
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }

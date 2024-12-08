@@ -101,6 +101,8 @@
                 errorMessage += newBetData;
                 return;
             }
+        } catch(NavigationException navEx) {
+            navigationManager.NavigateTo($"{prevPage}");
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }
