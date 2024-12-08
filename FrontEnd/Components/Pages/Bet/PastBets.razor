@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 @if(myBetsToClosedMatchesList is null) {
     <h3>Betöltés...</h3>
@@ -71,28 +72,34 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        //Minden tippverseny kigyüjtése amiben a játékos részt vesz/vett
-        myContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userContests/{userId}");
+        try {
+            //Minden tippverseny kigyüjtése amiben a játékos részt vesz/vett
+            myContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userContests/{userId}");
 
-        //Minden kigyűjtött tippversenyhez tartozó lezárt meccs megkeresése
-        foreach(var contest in myContestsList) {
-            var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/closedMatches/{contest.Id}");
-            closedMatchesList.Add(tmpMatchList);
-        }
-
-        //Minden kigyüjtőtt meccshez tartozó tipp összegyűjtése és div-ek nevének és láthatóságának beállítása
-        int j = 0;
-        foreach(var contest in myContestsList) {
-            foreach(var matchInContest in closedMatchesList[j]) {
-                BetVM betForMatchInContest = null;
-                try {
-                    betForMatchInContest = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
-                } catch(HttpRequestException exc) { }
-
-                if(betForMatchInContest != null)
-                    myBetsToClosedMatchesList.Add(betForMatchInContest);
+            //Minden kigyűjtött tippversenyhez tartozó lezárt meccs megkeresése
+            foreach(var contest in myContestsList) {
+                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/closedMatches/{contest.Id}");
+                closedMatchesList.Add(tmpMatchList);
             }
-            j++;
+
+            //Minden kigyüjtőtt meccshez tartozó tipp összegyűjtése
+            int j = 0;
+            foreach(var contest in myContestsList) {
+                foreach(var matchInContest in closedMatchesList[j]) {
+                    BetVM betForMatchInContest = null;
+                    try {
+                        betForMatchInContest = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
+                    } catch(HttpRequestException httpEx) { }
+
+                    if(betForMatchInContest != null)
+                        myBetsToClosedMatchesList.Add(betForMatchInContest);
+                }
+                j++;
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
+
+        
     }
 }

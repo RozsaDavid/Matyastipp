@@ -22,21 +22,18 @@
             <div class="bet-form">
                 <EditForm Model="editBet" OnValidSubmit="BetEdit" FormName="EditBet" Enhance>
                     <DataAnnotationsValidator />
-
                     <div class="mb-3">
                         <label for="homeTeam" class="form-label">@actualMatch.HomeName :</label>
                         <InputNumber id="homeTeam" @bind-Value="editBet.HomeGoals" class="form-control" />
-                        <ValidationMessage For="()=>editBet.HomeGoals" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
                         <label for="guestTeam" class="form-label">@actualMatch.GuestName</label>
                         <InputNumber id="guestTeam" @bind-Value="editBet.GuestGoals" class="form-control" />
-                        <ValidationMessage For="()=>editBet.GuestGoals" class="text-danger" />
                     </div>
 
-                    <div class="mb-3 text-center">
-                        <span class="text-danger">@errorMessage</span>
+                    <div class="mb-3 text-center error-message">
+                        @errorMessage
                     </div>
 
                     <button type="submit" class="btn btn-success md-4">Mentés</button>
@@ -81,15 +78,20 @@
 
         int[] editBetData = { editBet.HomeGoals, editBet.GuestGoals };
 
-        var response = await httpClient.PutAsJsonAsync<int[]>($"api/bet/update/{editBet.Id}", editBetData);
+        try {
+            var response = await httpClient.PutAsJsonAsync<int[]>($"api/bet/update/{editBet.Id}", editBetData);
 
-        if(response.IsSuccessStatusCode) {
-            navigationManager.NavigateTo($"{prevPage}");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
-            return;
+            if(response.IsSuccessStatusCode) {
+                navigationManager.NavigateTo($"{prevPage}");
+            } else {
+                errorMessage = await response.Content.ReadAsStringAsync();
+                return;
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
     }
+        
 }
 
 

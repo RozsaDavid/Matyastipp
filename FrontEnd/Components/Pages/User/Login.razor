@@ -20,15 +20,14 @@
             <div class="mb-3">
                 <label for="username" class="form-label">Felhasználónév:</label>
                 <InputText id="username" @bind-Value="loginModel.Username" class="form-control" placeholder="Felhasználónév" />
-                <ValidationMessage For="()=>loginModel.Username" class="error-message" />
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Jelszó:</label>
                 <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" placeholder="Jelszó" />
-                    <ValidationMessage For="()=>loginModel.Password" class="error-message" />
             </div>
-            <div class="mb-3 text-center">
-                    <span class="error-message">@errorMessage</span>
+
+            <div class="mb-3 text-center error-message">
+                @errorMessage
             </div>
         
             <button type="submit" class="btn btn-primary">Bejelentkezés</button>
@@ -58,44 +57,48 @@
         //adatok előkészítése az apinak
         string[] userData = { loginModel.Username, loginModel.Password };
         loginModel.Password = String.Empty;
-        //api hívás
-        var response = await httpClient.PostAsJsonAsync("api/user/login", userData);
 
-        //felhasználó bejelentkeztetése
-        if(response.IsSuccessStatusCode) {
-            string accessToken = await response.Content.ReadAsStringAsync();
-            accessToken = accessToken.Replace("\"", string.Empty);
-            accessToken = accessToken.Replace("}", string.Empty);
-            string[] splittedAccessToken = accessToken.Split(":");
-            accessToken = splittedAccessToken[1];
+        try {
+            //api hívás
+            var response = await httpClient.PostAsJsonAsync("api/user/login", userData);
 
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            //felhasználó bejelentkeztetése
+            if(response.IsSuccessStatusCode) {
+                string accessToken = await response.Content.ReadAsStringAsync();
+                accessToken = accessToken.Replace("\"", string.Empty);
+                accessToken = accessToken.Replace("}", string.Empty);
+                string[] splittedAccessToken = accessToken.Split(":");
+                accessToken = splittedAccessToken[1];
 
-            //Ha ez működik akkor jó a token (duplaellenőrzés)
-            var user = await httpClient.GetFromJsonAsync<UserVM>("api/user/getUserWithToken");
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-            //ha jó, akkor bejelentkezés és token és adatok mentése Claim-ként
-            if (user != null){
+                //Ha ez működik akkor jó a token (duplaellenőrzés)
+                var user = await httpClient.GetFromJsonAsync<UserVM>("api/user/getUserWithToken");
 
-                var claims = new List<Claim>{
+                //ha jó, akkor bejelentkezés és token + adatok mentése Claim-ként
+                if(user != null) {
+
+                    var claims = new List<Claim>{
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim("token", accessToken),
                     new Claim("id", user.Id.ToString())
                 };
 
-                ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+                    ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
-                await httpContext.SignInAsync(principal);
+                    await httpContext.SignInAsync(principal);
 
-                httpContext.Response.Redirect("/");
+                    httpContext.Response.Redirect("/");
+                } else {
+                    errorMessage = "Hiba a bejelentkezés során.";
+                }
             } else {
-                errorMessage = "Hiba a bejelentkezés során.";
+                errorMessage = await response.Content.ReadAsStringAsync();
             }
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync(); 
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
-
     }
 }

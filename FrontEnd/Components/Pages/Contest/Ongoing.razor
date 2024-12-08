@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <div class="contest-container">
     @if(ongoingContestsList is null) {
@@ -35,9 +36,6 @@
                     </tr>
                 }
             </table>
-            <div class="mb-1 text-center">
-                <span class="text-danger">@errorMessage</span>
-            </div>
         }
     }
 </div>
@@ -48,15 +46,17 @@
 
     private List<ContestVM> ongoingContestsList = new();
 
-    private string errorMessage;
-
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
         string userId = httpContext.User.FindFirstValue("id");
 
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-
-        ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
+        try {
+            ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
+        }catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
+        }
+        
     }
 }

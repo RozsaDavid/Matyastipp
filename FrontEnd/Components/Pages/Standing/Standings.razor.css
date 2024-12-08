@@ -22,7 +22,6 @@ table {
     align-self: center;
     margin: auto;
     margin-top: 50px;
-    margin-bottom: 50px;
     border-collapse: collapse;
     border-radius: 25px;
     overflow: hidden
@@ -77,13 +76,6 @@ td {
         border-inline-start: none;
         width: 25%;
     }
-
-.text-danger {
-    color: darkred !important;
-    font-family: Verdana;
-    font-weight: bold;
-    padding-top: 15px;
-}
 
 @media screen and (max-width: 600px) {
     .standing-container{

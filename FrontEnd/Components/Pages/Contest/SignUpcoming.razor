@@ -34,9 +34,6 @@
                     </tr>
                 }
             </table>
-            <div class="mb-1 text-center">
-                <span class="text-danger">@errorMessage</span>
-            </div>
         }
     }
 </div>
@@ -47,8 +44,6 @@
 
     private List<ContestVM> upcomingContestsList = new();
 
-    private string errorMessage;
-
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");
         string userId = httpContext.User.FindFirstValue("id");
@@ -56,7 +51,12 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableUpcomingContest/{userId}");
+        try {
+            upcomingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableUpcomingContest/{userId}");
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
+        }
+        
     }
 }
 

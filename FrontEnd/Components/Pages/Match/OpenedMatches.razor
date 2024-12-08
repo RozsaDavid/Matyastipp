@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <div class="match-container">
     @if(openedMatchesList is null) {
@@ -29,15 +30,11 @@
                             <td style="word-break: break-all;">@match.HomeName</td>
                             <td style="word-break: break-all;">@match.GuestName</td>
                             <td>@match.Date.ToString("yyyy. MM. dd. hh:mm")</td>
-                            <td><a href="@($"makeBet?matchId={match.Id}&contestId={contestId}&accessToken={accessToken}&prevPage=/allOpenedMatches")" class="btn btn-success">Tippelés</a></td>
+                            <td><a href="@($"makeBet?matchId={match.Id}&contestId={contestId}&accessToken={accessToken}&prevPage=/openedMatches?contestId={contestId}")" class="btn btn-success">Tippelés</a></td>
                         </tr>
                     }
                 </table>
         }
-
-        <div class="mb-1 text-center">
-            <span class="text-danger">@errorMessage</span>
-        </div>
     }
 </div>
 
@@ -51,7 +48,6 @@
     private List<MatchVM> openedMatchesList = new();
 
     private string accessToken;
-    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");
@@ -60,6 +56,10 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        openedMatchesList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contestId}/{userId}");
+        try {
+            openedMatchesList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contestId}/{userId}");
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
+        }
     }
 }

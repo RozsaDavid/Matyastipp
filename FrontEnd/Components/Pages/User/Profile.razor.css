@@ -78,8 +78,8 @@ h3 {
     padding-top: 15px;
 }
 
-.text-danger {
-    color: darkred !important;
+.error-message {
+    color: darkred;
     font-family: Verdana;
     font-weight: bold;
     padding-top: 15px;

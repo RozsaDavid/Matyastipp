@@ -32,13 +32,11 @@
                 <div class="mb-1">
                     <label for="username" class="form-label">Felhasználónév</label>
                     <InputText id="username" @bind-Value="editUser.Username" class="form-control" />
-                    <ValidationMessage For="()=>editUser.Username" class="text-danger" />
                 </div>
 
                 <div class="mb-1">
                     <label for="realname" class="form-label">Valós név</label>
                     <InputText id="realname" @bind-Value="editUser.RealName" class="form-control" />
-                    <ValidationMessage For="()=>editUser.RealName" class="text-danger" />
                 </div>
 
                 <div class="mb-1">
@@ -53,8 +51,8 @@
                     <ValidationMessage For="()=>editUser.Password" class="text-danger" />
                 </div>
 
-                <div class="mb-1 text-center">
-                    <span class="text-danger">@errorMessage</span>
+                <div class="mb-3 text-center error-message">
+                    @errorMessage
                 </div>
 
                 <button type="submit" class="btn btn-success md-4">Mentés</button>
@@ -94,17 +92,23 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        editUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/getUserWithId/{userId}");
-        if(editUser is null) {
-            navigationManager.NavigateTo("/error");
-        } else {
-            editUser.Password = string.Empty;
+        try {
+            editUser = await httpClient.GetFromJsonAsync<UserVM>($"api/user/getUserWithId/{userId}");
+            if(editUser is null) {
+                navigationManager.NavigateTo("/apierror");
+            } else {
+                editUser.Password = string.Empty;
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
+
     }
 
     private async Task EditUser() {
-        if(editUser.Password == string.Empty) {
-            errorMessage = "Hibás jelszó!";
+        if(editUser.Password == string.Empty || editUser.Username == string.Empty
+            || editUser.Email == string.Empty || editUser.RealName == string.Empty) {
+            errorMessage = "Minden mezőt ki kell tölteni!";
             return;
         }
 
@@ -117,18 +121,22 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
-        editUser.Password = string.Empty;
+        try {
+            var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/update/{editUser.Id}", editUser);
+            editUser.Password = string.Empty;
 
-        if(response.IsSuccessStatusCode) {
-            //ha változott a felhasználónév akkor a Claim frissítéséhez átirányítás
-            if(actualUsername!=editUser.Username)        
-                navigationManager.NavigateTo("/changedUsername?actualUsername="+editUser.Username+"&accessToken="+accessToken+"&userId="+userId);
-            else
-                navigationManager.NavigateTo("/");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
-            errorMessage = errorMessage.Replace("\"", string.Empty);
+            if(response.IsSuccessStatusCode) {
+                //ha változott a felhasználónév akkor a Claim frissítéséhez átirányítás
+                if(actualUsername != editUser.Username)
+                    navigationManager.NavigateTo("/changedUsername?actualUsername=" + editUser.Username + "&accessToken=" + accessToken + "&userId=" + userId);
+                else
+                    navigationManager.NavigateTo("/");
+            } else {
+                errorMessage = await response.Content.ReadAsStringAsync();
+                errorMessage = errorMessage.Replace("\"", string.Empty);
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
     }
 
@@ -140,11 +148,15 @@
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-            var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
-            if(response.IsSuccessStatusCode) {
-                navigationManager.NavigateTo("/logout");
-            } else {
-                errorMessage = await response.Content.ReadAsStringAsync();
+            try {
+                var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
+                if(response.IsSuccessStatusCode) {
+                    navigationManager.NavigateTo("/logout");
+                } else {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            } catch(Exception ex) {
+                navigationManager.NavigateTo("/apierror");
             }
         }
     }

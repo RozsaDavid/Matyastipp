@@ -18,8 +18,8 @@
     box-shadow: 5px 5px 10px black;
 }
 
-.text-danger {
-    color: darkred !important;
+.error-message {
+    color: darkred;
     font-family: Verdana;
     font-weight: bold;
     padding-top: 15px;

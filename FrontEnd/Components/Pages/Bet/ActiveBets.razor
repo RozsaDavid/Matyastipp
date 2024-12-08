@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 @if(myBets is null) {
     <h3>Betöltés...</h3>
@@ -38,9 +39,9 @@
                 }
             </table>
         </div>
-                
-        <div class="mb-1 text-center">
-            <span class="text-danger">@errorMessage</span>
+
+        <div class="mb-3 text-center error-message">
+            @errorMessage
         </div>
     }
 }
@@ -63,12 +64,15 @@
 
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        try{
+            myBets = await httpClient.GetFromJsonAsync<List<BetVM>>($"api/bet/userBets/{userId}");
 
-        myBets = await httpClient.GetFromJsonAsync<List<BetVM>>($"api/bet/userBets/{userId}");
-
-        foreach(var bet in myBets) {
-            betsContests.Add(await httpClient.GetFromJsonAsync<ContestVM>($"api/contest/getContestWithId/{bet.ContestId}"));
-            betsMatches.Add(await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{bet.MatchId}"));
+            foreach(var bet in myBets) {
+                betsContests.Add(await httpClient.GetFromJsonAsync<ContestVM>($"api/contest/getContestWithId/{bet.ContestId}"));
+                betsMatches.Add(await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{bet.MatchId}"));
+            }
+        }catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
     }
 }

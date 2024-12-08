@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <div class="standing-container">
     @if(standingList is null) {
@@ -28,9 +29,6 @@
                     </tr>
                 }
             </table>
-            <div class="mb-1 text-center">
-                <span class="text-danger">@errorMessage</span>
-            </div>
         }
 </div>
 
@@ -40,8 +38,6 @@
 
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
-
-    private string errorMessage;
 
     private List<string> standingSTR = new List<string>();
 
@@ -53,16 +49,20 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-        standingSTR = await httpClient.GetFromJsonAsync<List<string>>($"api/contest/standing/{contestId}");
+        try {
+            standingSTR = await httpClient.GetFromJsonAsync<List<string>>($"api/contest/standing/{contestId}");
 
-        foreach(string stnd in standingSTR) {
-            string[] tmp = stnd.Split(';');
-            StandingVM stndTMP = new StandingVM();
-            stndTMP.Username = tmp[0];
-            stndTMP.Points = Int32.Parse(tmp[1]);
-            standingList.Add(stndTMP); 
+            foreach(string stnd in standingSTR) {
+                string[] tmp = stnd.Split(';');
+                StandingVM stndTMP = new StandingVM();
+                stndTMP.Username = tmp[0];
+                stndTMP.Points = Int32.Parse(tmp[1]);
+                standingList.Add(stndTMP);
+            }
+
+            standingList = standingList.OrderByDescending(s => s.Points).ToList();
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
-
-        standingList=standingList.OrderByDescending(s => s.Points).ToList();
     }
 }

@@ -8,6 +8,7 @@
 @attribute [Authorize]
 
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 @if(myContestsList is null) {
     <h3>Betöltés...</h3>
@@ -41,9 +42,6 @@
             }
             <div hidden>@(i++)</div>
         }
-        <div class="mb-1 text-center">
-            <span class="text-danger">@errorMessage</span>
-        </div>
     }
 }
 
@@ -55,7 +53,6 @@
     private List<ContestVM> myContestsList = new List<ContestVM>();
 
     private string accessToken;
-    private string errorMessage;
 
     int i = 0;
 
@@ -68,19 +65,23 @@
 
         List<ContestVM> tmpContestsList = new List<ContestVM>();
 
-        tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
+        try {
+            tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
 
-        foreach (var contest in tmpContestsList)
-            myContestsList.Add(contest);
+            foreach(var contest in tmpContestsList)
+                myContestsList.Add(contest);
 
-        tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userUpcomingContests/{userId}");
+            tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userUpcomingContests/{userId}");
 
-        foreach(var contest in tmpContestsList)
-            myContestsList.Add(contest);
+            foreach(var contest in tmpContestsList)
+                myContestsList.Add(contest);
 
-        foreach(var contest in myContestsList) {
-            var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contest.Id}/{userId}");
-            openedMatchesList.Add(tmpMatchList);
+            foreach(var contest in myContestsList) {
+                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contest.Id}/{userId}");
+                openedMatchesList.Add(tmpMatchList);
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
     }
 }

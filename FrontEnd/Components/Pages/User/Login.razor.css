@@ -44,7 +44,7 @@
     }
 
     .error-message {
-        color: darkred !important;
+        color: darkred;
         font-family: Verdana;
         font-weight: bold;
         padding-top: 15px;

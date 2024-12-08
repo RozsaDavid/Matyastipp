@@ -1,0 +1,63 @@
+﻿h3 {
+    color: darkred;
+    text-shadow: 5px 5px 10px #f1f1ef;
+    font-size: 45px;
+    font-family: Verdana;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 25px;
+}
+
+h4 {
+    color: darkred;
+    text-shadow: 5px 5px 10px #f1f1ef;
+    font-size: 30px;
+    font-family: Verdana;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.error-container {
+    width: 70%;
+    align-self: center;
+    margin: auto;
+    margin-top: 50px;
+    padding: 50px;
+    border: solid 3px #f1f1ef;
+    border-radius: 25px;
+    box-shadow: 5px 5px 10px black;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    width: 200px;
+}
+    .btn-primary:hover {
+        background-color: #68340e;
+        border-color: #68340e;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
+    }
+
+@media screen and (max-width: 850px) {
+    h3 {
+        font-size: 20px;
+    }
+
+    h4 {
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .error-container {
+        width: 90%;
+    }
+}

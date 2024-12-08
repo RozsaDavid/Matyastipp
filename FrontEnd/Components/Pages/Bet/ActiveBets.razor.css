@@ -78,6 +78,13 @@ td {
     padding-top: 15px;
 }
 
+.error-message {
+    color: darkred;
+    font-family: Verdana;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
 @media screen and (max-width: 1300px) {
     th, td {
         font-size: 15px;

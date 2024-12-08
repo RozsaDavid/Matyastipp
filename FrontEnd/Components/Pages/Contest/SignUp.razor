@@ -13,8 +13,8 @@
 <div class="text-container">
     <h3>Nevezés...</h3>
 
-    <div class="mb-1 text-center">
-        <span class="text-danger">@errorMessage</span>
+    <div class="mb-3 text-center error-message">
+        @errorMessage
     </div>
 </div>
 
@@ -39,12 +39,17 @@
 
         string[] signOnData = { userId.ToString(), contestId.ToString() };
 
-        var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
+        try {
+            var response = await httpClient.PostAsJsonAsync("api/contest/signContest", signOnData);
 
-        if(response.IsSuccessStatusCode) {
-            navigationManager.NavigateTo($"{prevPage}");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
+            if(response.IsSuccessStatusCode) {
+                navigationManager.NavigateTo($"{prevPage}");
+            } else {
+                errorMessage = await response.Content.ReadAsStringAsync();
+            }
+        } catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
+
     }
 }

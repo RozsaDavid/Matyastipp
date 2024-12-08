@@ -17,29 +17,32 @@
                 <div class="mb-3">
                     <label for="username" class="form-label">Felhasználónév</label>
                     <InputText id="username" @bind-Value="newUser.Username" class="form-control" />
-                    <ValidationMessage For="()=>newUser.Username" class="error-message" />
                 </div>
 
                 <div class="mb-3">
                     <label for="realname" class="form-label">Valós név</label>
                     <InputText id="realname" @bind-Value="newUser.RealName" class="form-control" />
-                    <ValidationMessage For="()=>newUser.RealName" class="error-message" />
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
                     <InputText id="email" @bind-Value="newUser.Email" class="form-control" />
-                    <ValidationMessage For="()=>newUser.Email" class="error-message" />
+                    <div class="error-message">
+                        <ValidationMessage For="()=>newUser.Email"/>
+                    </div>
+                    
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Jelszó</label>
                     <InputText type="password" id="password" @bind-Value="newUser.Password" class="form-control" />
-                    <ValidationMessage For="()=>newUser.Password" class="text-danger" />
+                    <div class="error-message">
+                        <ValidationMessage For="()=>newUser.Password"/>
+                    </div>
                 </div>
 
-                <div class="mb-3 text-center">
-                    <span class="error-message">@errorMessage</span>
+                <div class="mb-3 text-center error-message">
+                    @errorMessage
                 </div>
 
                 <button type="submit" class="btn btn-success md-4">Mentés</button>
@@ -56,8 +59,9 @@
     private string errorMessage;
 
     private async Task AddUser() {
-        if(newUser.Password == string.Empty) {
-            errorMessage = "Hibás jelszó!";
+        if(newUser.Password == string.Empty || newUser.Username == string.Empty
+            || newUser.Email == string.Empty || newUser.RealName == string.Empty) {
+            errorMessage = "Minden mezőt ki kell tölteni!";
             return;
         }
 
@@ -66,14 +70,19 @@
         var hashBytes = MD5.Create().ComputeHash(source);
         newUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
-        var response = await httpClient.PostAsJsonAsync("api/user/registration", newUser);
-        newUser.Password = string.Empty;
+        try{
+            var response = await httpClient.PostAsJsonAsync("api/user/registration", newUser);
+            newUser.Password = string.Empty;
 
-        if(response.IsSuccessStatusCode) {
-            navigationManager.NavigateTo("/");
-        } else {
-            errorMessage = await response.Content.ReadAsStringAsync();
-            errorMessage = errorMessage.Replace("\"", string.Empty);
+            if(response.IsSuccessStatusCode) {
+                navigationManager.NavigateTo("/");
+            } else {
+                errorMessage = await response.Content.ReadAsStringAsync();
+                errorMessage = errorMessage.Replace("\"", string.Empty);
+            }
+        }catch(Exception ex) {
+            navigationManager.NavigateTo("/apierror");
         }
+        
     }
 }
