@@ -17,20 +17,20 @@
     </div>
 }else{
     <div class="row">
-        <div class="bet-box">
+        <div class="bet-form-container">
             <h3>Tipp leadása</h3>
-            <div class="bet-box-form">
+            <div class="bet-form">
                 <EditForm Model="newBet" OnValidSubmit="NewBet" FormName="NewBet" Enhance>
                     <DataAnnotationsValidator />
 
                     <div class="mb-3">
-                        <label for="homeTeam" class="form-label">@homeTeam:</label>
+                        <label for="homeTeam" class="form-label">@actualMatch.HomeName:</label>
                         <InputNumber id="homeTeam" @bind-Value="newBet.HomeGoals" class="form-control" />
                         <ValidationMessage For="()=>newBet.HomeGoals" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
-                        <label for="guestTeam" class="form-label">@guestTeam</label>
+                        <label for="guestTeam" class="form-label">@actualMatch.GuestName</label>
                         <InputNumber id="guestTeam" @bind-Value="newBet.GuestGoals" class="form-control" />
                         <ValidationMessage For="()=>newBet.GuestGoals" class="text-danger" />
                     </div>
@@ -68,10 +68,7 @@
 
     private MatchVM actualMatch { get; set; }
 
-    public string homeTeam;
-    public string guestTeam;
-
-    public string? errorMessage;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
@@ -86,9 +83,6 @@
         newBet.ContestId = contestId;
         newBet.UserId = actualUser.Id;
         newBet.IsWon = 0;
-
-        homeTeam = actualMatch.HomeName;
-        guestTeam = actualMatch.GuestName;
     }
 
     private async Task NewBet() {

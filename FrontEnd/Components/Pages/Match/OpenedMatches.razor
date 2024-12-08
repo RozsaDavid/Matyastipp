@@ -48,10 +48,10 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<MatchVM> openedMatchesList = new();
+    private List<MatchVM> openedMatchesList = new();
 
-    string accessToken;
-    string errorMessage;
+    private string accessToken;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");

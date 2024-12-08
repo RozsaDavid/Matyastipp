@@ -18,7 +18,7 @@
         <h3>Nyitott mérkőzések</h3>
         @foreach(var contest in myContestsList) {
             @if(openedMatchesList[i].Count > 0) {
-                <div class="contest-container">
+                <div class="match-container">
                     <h4 style="word-break: break-all;">@contest.Name</h4>
                         @foreach(var match in openedMatchesList[i]) {
                             <table>
@@ -51,11 +51,11 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<List<MatchVM>> openedMatchesList = new List< List< MatchVM>> ();
-    List<ContestVM> myContestsList = new List<ContestVM>();
+    private List<List<MatchVM>> openedMatchesList = new List< List< MatchVM>> ();
+    private List<ContestVM> myContestsList = new List<ContestVM>();
 
-    string accessToken;
-    string errorMessage;
+    private string accessToken;
+    private string errorMessage;
 
     int i = 0;
 

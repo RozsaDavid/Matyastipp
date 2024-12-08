@@ -17,7 +17,7 @@ h4 {
     text-align: center;
 }
 
-.contest-container {
+.match-container {
     width: 70%;
     align-self: center;
     margin: auto;
@@ -109,7 +109,7 @@ td {
 }
 
 @media screen and (max-width: 700px) {
-    .contest-container {
+    .match-container {
         width: 90%;
     }
 }

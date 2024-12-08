@@ -7,6 +7,7 @@
 
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+
 @rendermode InteractiveServer
 
 @if(actualMatch is null || editBet is null) {
@@ -16,20 +17,20 @@
     </div>
 } else {
     <div class="row">
-        <div class="bet-box">
+        <div class="bet-form-container">
             <h3>Tipp szerkesztése</h3>
-            <div class="bet-box-form">
+            <div class="bet-form">
                 <EditForm Model="editBet" OnValidSubmit="BetEdit" FormName="EditBet" Enhance>
                     <DataAnnotationsValidator />
 
                     <div class="mb-3">
-                        <label for="homeTeam" class="form-label">@homeTeam:</label>
+                        <label for="homeTeam" class="form-label">@actualMatch.HomeName :</label>
                         <InputNumber id="homeTeam" @bind-Value="editBet.HomeGoals" class="form-control" />
                         <ValidationMessage For="()=>editBet.HomeGoals" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
-                        <label for="guestTeam" class="form-label">@guestTeam</label>
+                        <label for="guestTeam" class="form-label">@actualMatch.GuestName</label>
                         <InputNumber id="guestTeam" @bind-Value="editBet.GuestGoals" class="form-control" />
                         <ValidationMessage For="()=>editBet.GuestGoals" class="text-danger" />
                     </div>
@@ -61,10 +62,7 @@
 
     private MatchVM actualMatch { get; set; }
 
-    public string homeTeam;
-    public string guestTeam;
-
-    public string? errorMessage;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
@@ -73,9 +71,6 @@
 
         editBet = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithId/{betId}");
         actualMatch = await httpClient.GetFromJsonAsync<MatchVM>($"api/match/getMatchWithId/{editBet.MatchId}");
-
-        homeTeam = actualMatch.HomeName;
-        guestTeam = actualMatch.GuestName;
     }
 
     private async Task BetEdit() {

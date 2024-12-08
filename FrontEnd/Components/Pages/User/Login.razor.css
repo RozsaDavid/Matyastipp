@@ -1,4 +1,4 @@
-﻿.login-box {
+﻿.login-form-container {
     text-align: center;
     width: 400px;
     display: flex;
@@ -13,7 +13,7 @@
     box-shadow: 5px 5px 10px black;
 }
 
-.login-box-form{
+.login-form{
     width: 300px;
 }
 
@@ -26,7 +26,7 @@
         padding-top: 20px;
     }
 
-    .login-box-form button {
+    .login-form button {
         margin-top: 20px;
         margin-bottom: 20px;
         width: 250px;
@@ -43,9 +43,9 @@
         padding-top: 20px;
     }
 
-    .text-danger {
+    .error-message {
         color: darkred !important;
         font-family: Verdana;
         font-weight: bold;
-        padding-top: 20px;
+        padding-top: 15px;
     }

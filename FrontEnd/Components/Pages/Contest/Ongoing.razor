@@ -9,7 +9,7 @@
 
 @inject HttpClient httpClient
 
-<div class="table-container">
+<div class="contest-container">
     @if(ongoingContestsList is null) {
         <h3>Betöltés...</h3>
     } else {
@@ -46,9 +46,9 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<ContestVM> ongoingContestsList = new();
+    private List<ContestVM> ongoingContestsList = new();
 
-    string errorMessage;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");

@@ -50,12 +50,12 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<BetVM> myBets = new List<BetVM>();
-    List<ContestVM> betsContests = new List<ContestVM>();
-    List<MatchVM> betsMatches = new List<MatchVM>();
+    private List<BetVM> myBets = new List<BetVM>();
+    private List<ContestVM> betsContests = new List<ContestVM>();
+    private List<MatchVM> betsMatches = new List<MatchVM>();
 
-    string accessToken;
-    string errorMessage;
+    private string accessToken;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         accessToken = httpContext.User.FindFirstValue("token");

@@ -1,4 +1,4 @@
-﻿.profile-box {
+﻿.profile-form-container {
     text-align: center;
     width: 400px;
     display: flex;
@@ -13,7 +13,7 @@
     box-shadow: 5px 5px 10px black;
 }
 
-.profile-box-form {
+.profile-form {
     width: 300px;
 }
 
@@ -26,7 +26,7 @@ h3 {
     padding-top: 15px;
 }
 
-.profile-box-form button{
+.profile-form button{
     margin-top: 15px;
     width: 250px;
     font-size: 20px;
@@ -34,7 +34,7 @@ h3 {
     font-weight: bold;
 }
 
-.profile-box-form a {
+.profile-form a {
     margin-top: 15px;
     margin-bottom: 15px;
     width: 250px;

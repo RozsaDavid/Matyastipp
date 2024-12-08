@@ -1,4 +1,4 @@
-﻿.registration-box {
+﻿.registration-form-container {
     text-align: center;
     width: 400px;
     display: flex;
@@ -13,7 +13,7 @@
     box-shadow: 5px 5px 10px black;
 }
 
-.registration-box-form {
+.registration-form {
     width: 300px;
 }
 
@@ -26,7 +26,7 @@ h3 {
     padding-top: 15px;
 }
 
-.registration-box-form button {
+.registration-form button {
     margin-top: 15px;
     width: 250px;
     font-size: 20px;
@@ -34,7 +34,7 @@ h3 {
     font-weight: bold;
 }
 
-.registration-box-form a {
+.registration-form a {
     margin-top: 15px;
     margin-bottom: 15px;
     width: 250px;
@@ -79,7 +79,7 @@ h3 {
     padding-top: 15px;
 }
 
-.text-danger {
+.error-message {
     color: darkred !important;
     font-family: Verdana;
     font-weight: bold;

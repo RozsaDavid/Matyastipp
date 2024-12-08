@@ -15,7 +15,7 @@
     @if(myBetsToClosedMatchesList.Count() == 0) {
         <h3>Nincsenek lezárt tippjeid.</h3>
     } else {
-        <div class="table-container">
+        <div class="contest-container">
             <h3>Tippversenyek</h3>
             <table>
                 <tr>
@@ -49,16 +49,12 @@
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 
-    List<ContestVM> myContestsList = new List<ContestVM>();
-    List<List<MatchVM>> closedMatchesList = new List<List<MatchVM>>();
-    List<BetVM> myBetsToClosedMatchesList = new List<BetVM>();
-
-    string accessToken;
-
-    int i = 0;
+    private List<ContestVM> myContestsList = new List<ContestVM>();
+    private List<List<MatchVM>> closedMatchesList = new List<List<MatchVM>>();
+    private List<BetVM> myBetsToClosedMatchesList = new List<BetVM>();
 
     protected override async Task OnInitializedAsync() {
-        accessToken = httpContext.User.FindFirstValue("token");
+        string accessToken = httpContext.User.FindFirstValue("token");
         string userId = httpContext.User.FindFirstValue("id");
 
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);

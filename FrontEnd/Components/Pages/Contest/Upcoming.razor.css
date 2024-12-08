@@ -7,7 +7,7 @@
     text-align: center;
 }
 
-.table-container {
+.contest-container {
     width: 70%;
     align-self: center;
     margin: auto;
@@ -53,7 +53,7 @@ td {
     height: auto;
     text-align: center;
     width: 20%;
-    padding: 10px;
+    padding: 5px;
     border-inline: solid 1px #8B4513;
 }
 
@@ -94,7 +94,7 @@ td {
 }
 
 @media screen and (max-width: 700px) {
-    .table-container {
+    .contest-container {
         width: 90%;
     }
 }

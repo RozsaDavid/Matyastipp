@@ -10,7 +10,7 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<div class="table-container">
+<div class="text-container">
     <h3>Nevezés...</h3>
 
     <div class="mb-1 text-center">
@@ -23,12 +23,12 @@
     public HttpContext httpContext { get; set; }
 
     [SupplyParameterFromQuery]
-    string contestId { get; set; }
+    private string contestId { get; set; }
 
     [SupplyParameterFromQuery]
-    string prevPage { get; set; }
+    private string prevPage { get; set; }
 
-    string errorMessage;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         string accessToken = httpContext.User.FindFirstValue("token");

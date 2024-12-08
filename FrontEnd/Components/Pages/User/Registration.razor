@@ -9,29 +9,27 @@
 
 
 <div class="row">
-    <div class="registration-box">
+    <div class="registration-form-container">
         <h3>Regisztráció</h3>
-        <div class="registration-box-form">
+        <div class="registration-form">
             <EditForm Model="newUser" OnValidSubmit="AddUser" FormName="CreateUser" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
-
                 <div class="mb-3">
                     <label for="username" class="form-label">Felhasználónév</label>
                     <InputText id="username" @bind-Value="newUser.Username" class="form-control" />
-                    <ValidationMessage For="()=>newUser.Username" class="text-danger" />
+                    <ValidationMessage For="()=>newUser.Username" class="error-message" />
                 </div>
 
                 <div class="mb-3">
                     <label for="realname" class="form-label">Valós név</label>
                     <InputText id="realname" @bind-Value="newUser.RealName" class="form-control" />
-                    <ValidationMessage For="()=>newUser.RealName" class="text-danger" />
+                    <ValidationMessage For="()=>newUser.RealName" class="error-message" />
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
                     <InputText id="email" @bind-Value="newUser.Email" class="form-control" />
-                    <ValidationMessage For="()=>newUser.Email" class="text-danger" />
+                    <ValidationMessage For="()=>newUser.Email" class="error-message" />
                 </div>
 
                 <div class="mb-3">
@@ -41,7 +39,7 @@
                 </div>
 
                 <div class="mb-3 text-center">
-                    <span class="text-danger">@errorMessage</span>
+                    <span class="error-message">@errorMessage</span>
                 </div>
 
                 <button type="submit" class="btn btn-success md-4">Mentés</button>
@@ -53,9 +51,9 @@
 
 @code {
     [SupplyParameterFromForm]
-    public UserVM newUser { get; set; } = new();
+    private UserVM newUser { get; set; } = new();
 
-    public string? errorMessage;
+    private string errorMessage;
 
     private async Task AddUser() {
         if(newUser.Password == string.Empty) {

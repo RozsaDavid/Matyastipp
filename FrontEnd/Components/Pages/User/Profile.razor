@@ -22,9 +22,9 @@
     @errorMessage
 } else {
     <div class="row">
-        <div class="profile-box">
+        <div class="profile-form-container">
         <h3>Profil</h3>
-        <div class="profile-box-form">
+        <div class="profile-form">
             <EditForm Model="editUser" OnValidSubmit="EditUser" FormName="EditUser" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger" />
@@ -85,9 +85,9 @@
     [SupplyParameterFromForm]
     private UserVM editUser { get; set; }
 
-    List<UserVM> usersList = new();
+    private List<UserVM> usersList = new();
 
-    public string? errorMessage;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();

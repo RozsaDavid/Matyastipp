@@ -7,7 +7,7 @@
     text-align: center;
 }
 
-.table-container {
+.bet-container {
     width: 70%;
     align-self: center;
     margin: auto;
@@ -111,7 +111,7 @@ td {
 }
 
 @media screen and (max-width: 700px) {
-    .table-container {
+    .bet-container {
         width: 90%;
     }
 }
