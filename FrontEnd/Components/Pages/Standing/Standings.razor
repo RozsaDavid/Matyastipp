@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Ranglista</PageTitle>
+
 <div class="standing-container">
     @if(standingList is null) {
         <h3>Betöltés...</h3>
@@ -30,11 +32,15 @@
                 }
             </table>
         }
+    <a href="@prevPage" class="btn btn-primary">Vissza</a>
 </div>
 
 @code {
     [SupplyParameterFromQuery]
     private int contestId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string prevPage { get; set; }
 
     [CascadingParameter]
     public HttpContext httpContext { get; set; }

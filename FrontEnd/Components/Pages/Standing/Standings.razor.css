@@ -10,6 +10,7 @@
 .standing-container {
     width: 600px;
     align-self: center;
+    text-align: center;
     margin: auto;
     margin-top: 50px;
     padding: 50px;
@@ -75,6 +76,24 @@ td {
     td:first-child {
         border-inline-start: none;
         width: 25%;
+    }
+
+.btn-primary {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    margin: auto;
+    margin-top: 50px;
+    width: 100px;
+}
+
+    .btn-primary:hover {
+        background-color: #68340e;
+        border-color: #68340e;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
     }
 
 @media screen and (max-width: 600px) {

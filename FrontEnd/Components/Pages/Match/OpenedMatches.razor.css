@@ -23,7 +23,6 @@ table {
     align-self: center;
     margin: auto;
     margin-top: 50px;
-    margin-bottom: 50px;
     border-collapse: collapse;
     border-radius: 25px;
     overflow: hidden
@@ -70,6 +69,22 @@ td {
         width: 140px;
     }
 
+.btn-primary {
+    background-color: #8B4513;
+    border-color: #8B4513;
+    margin-top: 50px;
+    width: 100px;
+}
+
+    .btn-primary:hover {
+        background-color: #68340e;
+        border-color: #68340e;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition-property: color, background-color, border-color, box-shadow;
+        transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+        transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
+        transition-delay: 0s, 0s, 0s, 0s;
+    }
 
 @media screen and (max-width: 850px) {
     h3 {
@@ -83,7 +98,7 @@ td {
         td a {
             padding: 0;
             width: 50px;
-            font-size: 8px;
+            font-size: 10px;
             text-align: center;
         }
 }
@@ -91,5 +106,6 @@ td {
 @media screen and (max-width: 700px) {
     .match-container {
         width: 90%;
+        padding: 25px;
     }
 }

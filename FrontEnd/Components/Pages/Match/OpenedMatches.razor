@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Nyitott mérkőzések</PageTitle>
+
 <div class="match-container">
     @if(openedMatchesList is null) {
         <h3>Betöltés...</h3>
@@ -29,19 +31,23 @@
                         <tr>
                             <td style="word-break: break-all;">@match.HomeName</td>
                             <td style="word-break: break-all;">@match.GuestName</td>
-                            <td>@match.Date.ToString("yyyy. MM. dd. hh:mm")</td>
+                            <td>@match.Date.ToString("yyyy. MM. dd. HH:mm")</td>
                             <td><a href="@($"makeBet?matchId={match.Id}&contestId={contestId}&accessToken={accessToken}&prevPage=/openedMatches?contestId={contestId}")" class="btn btn-success">Tippelés</a></td>
                         </tr>
                     }
                 </table>
         }
     }
+    <a href="@prevPage" class="btn btn-primary">Vissza</a>
 </div>
 
 @code {
     [SupplyParameterFromQuery]
     private int contestId { get; set; }
 
+    [SupplyParameterFromQuery]
+    private string prevPage { get; set; }
+    
     [CascadingParameter]
     public HttpContext httpContext { get; set; }
 

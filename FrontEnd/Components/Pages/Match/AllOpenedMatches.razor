@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Nyitott mérkőzések</PageTitle>
+
 @if(myContestsList is null) {
     <h3>Betöltés...</h3>
 } else {
@@ -21,22 +23,22 @@
             @if(openedMatchesList[i].Count > 0) {
                 <div class="match-container">
                     <h4 style="word-break: break-all;">@contest.Name</h4>
-                        @foreach(var match in openedMatchesList[i]) {
-                            <table>
-                                <tr>
-                                    <th>Hazai csapat</th>
-                                    <th>Vendég csapat</th>
-                                    <th>Kezdés</th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <td style="word-break: break-all;">@match.HomeName</td>
-                                    <td style="word-break: break-all;">@match.GuestName</td>
-                                    <td>@match.Date.ToString("yyyy. MM. dd. hh:mm")</td>
-                                    <td><a href="@($"makeBet?matchId={match.Id}&contestId={contest.Id}&accessToken={accessToken}&prevPage=/allOpenedMatches")" class="btn btn-success">Tippelés</a></td>
-                                </tr>
-                            </table>
-                        }
+                         <table>
+                                    <tr>
+                                        <th>Hazai csapat</th>
+                                        <th>Vendég csapat</th>
+                                        <th>Kezdés</th>
+                                        <th></th>
+                                    </tr>
+                            @foreach(var match in openedMatchesList[i]) {
+                                    <tr>
+                                        <td style="word-break: break-all;">@match.HomeName</td>
+                                        <td style="word-break: break-all;">@match.GuestName</td>
+                                        <td>@match.Date.ToString("yyyy. MM. dd. HH:mm")</td>
+                                        <td><a href="@($"makeBet?matchId={match.Id}&contestId={contest.Id}&accessToken={accessToken}&prevPage=/allOpenedMatches")" class="btn btn-success">Tippelés</a></td>
+                                    </tr>
+                            }
+                         </table>
                     
                 </div>
             }

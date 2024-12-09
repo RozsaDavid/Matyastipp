@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Aktív tippek</PageTitle>
+
 @if(myBets is null) {
     <h3>Betöltés...</h3>
 } else {
@@ -33,7 +35,7 @@
                         <td style="word-break: break-all;">@betsMatches[i].HomeName</td>
                         <td style="word-break: break-all;">@betsMatches[i].GuestName</td>
                         <td>@myBets[i].HomeGoals : @myBets[i].GuestGoals</td>
-                        <td>@betsMatches[i].Date.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@betsMatches[i].Date.ToString("yyyy. MM. dd. HH:mm")</td>
                         <td><a href="@($"editBet?accessToken={accessToken}&prevPage=/activeBets&betId={myBets[i].Id}")" class="btn btn-success">Tipp szerkesztése</a></td>
                     </tr>
                 }

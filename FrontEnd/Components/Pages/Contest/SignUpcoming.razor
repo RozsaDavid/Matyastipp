@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Közelgő tippversenyek</PageTitle>
+
 <div class="contest-container">
     @if(upcomingContestsList is null) {
         <h3>Betöltés...</h3>
@@ -28,8 +30,8 @@
                 @foreach(var contest in upcomingContestsList) {
                     <tr>
                         <td style="word-break: break-all;">@contest.Name</td>
-                        <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
-                        <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                        <td>@contest.StartDate.ToString("yyyy. MM. dd. HH:mm")</td>
+                        <td>@contest.EndDate.ToString("yyyy. MM. dd. HH:mm")</td>
                         <td><a href="@($"signUp?contestId={contest.Id}&prevPage=/signUpcoming")" class="btn btn-success">Nevezés</a></td>
                     </tr>
                 }

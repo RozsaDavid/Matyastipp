@@ -10,6 +10,8 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
+<PageTitle>Lezárt tippek</PageTitle>
+
 @if(myBetsToClosedMatchesList is null) {
     <h3>Betöltés...</h3>
 } else {
@@ -35,8 +37,8 @@
                     @if(isThereABet) {
                         <tr>
                             <td>@contest.Name</td>
-                            <td>@contest.StartDate.ToString("yyyy. MM. dd. hh:mm")</td>
-                            <td>@contest.EndDate.ToString("yyyy. MM. dd. hh:mm")</td>
+                            <td>@contest.StartDate.ToString("yyyy. MM. dd. HH:mm")</td>
+                            <td>@contest.EndDate.ToString("yyyy. MM. dd. HH:mm")</td>
                             <td><a href="@($"pastBets?&contestId={contest.Id}")" class="btn btn-success">Tippek mutatása</a></td>
                         </tr>
                     }
