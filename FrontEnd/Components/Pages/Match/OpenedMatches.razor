@@ -63,7 +63,7 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         try {
-            openedMatchesList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contestId}/{userId}");
+            openedMatchesList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/match/openedMatches/{contestId}/{userId}");
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }

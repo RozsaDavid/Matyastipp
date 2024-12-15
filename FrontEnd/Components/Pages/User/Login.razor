@@ -98,6 +98,7 @@
                 }
             } else {
                 errorMessage = await response.Content.ReadAsStringAsync();
+                errorMessage = errorMessage.Replace("}", string.Empty);
             }
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");

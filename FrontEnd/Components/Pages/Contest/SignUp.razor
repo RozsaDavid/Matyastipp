@@ -48,6 +48,7 @@
                 navigationManager.NavigateTo($"{prevPage}");
             } else {
                 errorMessage = await response.Content.ReadAsStringAsync();
+                errorMessage = errorMessage.Replace("}", string.Empty);
             }
         } catch(NavigationException navEx) {
             navigationManager.NavigateTo($"{prevPage}");

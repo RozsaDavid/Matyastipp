@@ -80,7 +80,7 @@
 
             //Minden kigyűjtött tippversenyhez tartozó lezárt meccs megkeresése
             foreach(var contest in myContestsList) {
-                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/closedMatches/{contest.Id}");
+                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/match/closedMatches/{contest.Id}");
                 closedMatchesList.Add(tmpMatchList);
             }
 

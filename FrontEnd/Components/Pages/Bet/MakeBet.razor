@@ -100,7 +100,7 @@
                 navigationManager.NavigateTo($"{prevPage}");
             else {
                 errorMessage = await response.Content.ReadAsStringAsync();
-                errorMessage += newBetData;
+                errorMessage = errorMessage.Replace("\"", string.Empty);
                 return;
             }
         } catch(NavigationException navEx) {

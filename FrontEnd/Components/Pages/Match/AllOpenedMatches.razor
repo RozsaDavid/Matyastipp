@@ -79,7 +79,7 @@
                 myContestsList.Add(contest);
 
             foreach(var contest in myContestsList) {
-                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/contest/openedMatches/{contest.Id}/{userId}");
+                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/match/openedMatches/{contest.Id}/{userId}");
                 openedMatchesList.Add(tmpMatchList);
             }
         } catch(Exception ex) {

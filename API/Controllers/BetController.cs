@@ -59,6 +59,15 @@ namespace API.Controllers {
                 return BadRequest("Már nem lehet fogadni erre a mérkőzésre!");
             }
 
+            List<Bet> allBets = _dbContext.Bets.ToList();
+
+            foreach(Bet bet in allBets) {
+                if(bet.UserId == newBet.UserId && bet.ContestId == newBet.ContestId
+                    && bet.MatchId == newBet.MatchId) {
+                    return BadRequest("Már fogadtál erre a mérkőzésre!");
+                }
+            }
+
             User actualUser = await _dbContext.Users.FindAsync(newBet.UserId);
             Contest actualContest = await _dbContext.Contests.FindAsync(newBet.ContestId);
 
