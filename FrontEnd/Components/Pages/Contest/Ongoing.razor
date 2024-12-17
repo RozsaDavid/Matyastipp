@@ -33,8 +33,10 @@
                         <td style="word-break: break-all;">@contest.Name</td>
                         <td>@contest.StartDate.ToString("yyyy. MM. dd. HH:mm")</td>
                         <td>@contest.EndDate.ToString("yyyy. MM. dd. HH:mm")</td>
-                        <td><a href="@($"standings?contestId={contest.Id}&prevPage=ongoing")" class="btn btn-success">Ranglista</a></td>
-                        <td><a href="@($"openedMatches?contestId={contest.Id}&prevPage=ongoing")" class="btn btn-success">Nyitott meccsek</a></td>
+                        <td><a href="@($"standings?contestId={contest.Id}&prevPage=ongoing")"
+                            class="btn btn-success">Ranglista</a></td>
+                        <td><a href="@($"openedMatches?contestId={contest.Id}&prevPage=ongoing")"
+                            class="btn btn-success">Nyitott meccsek</a></td>
                     </tr>
                 }
             </table>
@@ -55,7 +57,9 @@
         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         try {
-            ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
+            ongoingContestsList = 
+                await httpClient.GetFromJsonAsync<List<ContestVM>>
+                    ($"api/contest/userOngoingContests/{userId}");
         }catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }

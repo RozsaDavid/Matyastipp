@@ -15,7 +15,7 @@
 @if(myContestsList is null) {
     <h3>Betöltés...</h3>
 } else {
-    @if(myContestsList.Count == 0) {
+    @if(myContestsList.Count == 0 || allMatchListIsEmpty) {
         <h3>Nincsenek nyitott mérkőzések</h3>
     } else {
         <h3>Nyitott mérkőzések</h3>
@@ -56,6 +56,8 @@
 
     private string accessToken;
 
+    private bool allMatchListIsEmpty = true;
+
     int i = 0;
 
     protected override async Task OnInitializedAsync() {
@@ -68,18 +70,26 @@
         List<ContestVM> tmpContestsList = new List<ContestVM>();
 
         try {
-            tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userOngoingContests/{userId}");
+            tmpContestsList = 
+                await httpClient.GetFromJsonAsync<List<ContestVM>>
+                    ($"api/contest/userOngoingContests/{userId}");
 
             foreach(var contest in tmpContestsList)
                 myContestsList.Add(contest);
 
-            tmpContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/userUpcomingContests/{userId}");
+            tmpContestsList = 
+                await httpClient.GetFromJsonAsync<List<ContestVM>>
+                    ($"api/contest/userUpcomingContests/{userId}");
 
             foreach(var contest in tmpContestsList)
                 myContestsList.Add(contest);
 
             foreach(var contest in myContestsList) {
-                var tmpMatchList = await httpClient.GetFromJsonAsync<List<MatchVM>>($"api/match/openedMatches/{contest.Id}/{userId}");
+                var tmpMatchList = 
+                    await httpClient.GetFromJsonAsync<List<MatchVM>>
+                        ($"api/match/openedMatches/{contest.Id}/{userId}");
+                if (tmpMatchList.Count != 0)
+                    allMatchListIsEmpty = false;
                 openedMatchesList.Add(tmpMatchList);
             }
         } catch(Exception ex) {

@@ -56,7 +56,9 @@
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         try {
-            standingSTR = await httpClient.GetFromJsonAsync<List<string>>($"api/contest/standing/{contestId}");
+            standingSTR = 
+                await httpClient.GetFromJsonAsync<List<string>>
+                    ($"api/contest/standing/{contestId}");
 
             foreach(string stnd in standingSTR) {
                 string[] tmp = stnd.Split(';');

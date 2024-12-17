@@ -86,7 +86,7 @@
     }
 
     private async Task NewBet() {
-        if(newBet.GuestGoals<0 || newBet.HomeGoals < 0) {
+        if(newBet.GuestGoals<0 || newBet.HomeGoals < 0 || newBet.GuestGoals%1!=0 || newBet.HomeGoals%1!=0) {
             errorMessage = "Érvénytelen tipp";
             return;
         }

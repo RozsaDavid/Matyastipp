@@ -88,7 +88,9 @@ namespace API.Controllers {
             var contests = _dbContext.Contests.ToList();
             foreach(var contest in contests) {
                 if(usersContestsIds.Contains(contest.Id) &&
-                    contest.StartDate < DateTime.Now && contest.EndDate > DateTime.Now)
+                    contest.StartDate <
+                        DateTime.Now && contest.EndDate > DateTime.Now)
+
                     usersOngoingContests.Add(contest);
             }
 
@@ -167,7 +169,9 @@ namespace API.Controllers {
             }
 
             foreach(var standing in standings) {
-                if(standing.UserId == userId && availableContestsIds.Contains(standing.ContestId))
+                if(standing.UserId ==
+                    userId && availableContestsIds.Contains(standing.ContestId))
+
                     availableContestsIds.Remove(standing.ContestId);
             }
 
@@ -193,7 +197,8 @@ namespace API.Controllers {
                 if(standing.ContestId == contestId)
                     foreach(var user in users)
                         if(standing.UserId == user.Id)
-                            contestsStandingsList.Add(user.Username + ";" + standing.Points.ToString());
+                            contestsStandingsList.Add(user.Username +
+                                ";" + standing.Points.ToString());
 
 
             if(contestsStandingsList.Count() == 0)

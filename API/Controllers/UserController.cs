@@ -66,7 +66,8 @@ namespace API.Controllers {
                     issuer: _configuration["Jwt:Issuer"],
                     expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:Expire"]!)),
                     claims: authClaim,
-                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
+                    signingCredentials: new SigningCredentials
+                    (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
                     SecurityAlgorithms.HmacSha256
                     ));
                 return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });

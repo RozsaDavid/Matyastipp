@@ -28,7 +28,6 @@
         <div class="profile-form">
             <EditForm Model="editUser" OnValidSubmit="EditUser" FormName="EditUser" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
 
                 <div class="mb-1">
                     <label for="username" class="form-label">Felhasználónév</label>
@@ -43,13 +42,17 @@
                 <div class="mb-1">
                     <label for="email" class="form-label">E-mail</label>
                     <InputText id="email" @bind-Value="editUser.Email" class="form-control" />
-                    <ValidationMessage For="()=>editUser.Email" class="text-danger" />
+                    <div class="error-message">
+                        <ValidationMessage For="()=>editUser.Email" />
+                    </div>
                 </div>
 
                 <div class="mb-1">
                     <label for="password" class="form-label">Jelszó</label>
                     <InputText type="password" id="password" @bind-Value="editUser.Password" class="form-control" />
-                    <ValidationMessage For="()=>editUser.Password" class="text-danger" />
+                    <div class="error-message">
+                        <ValidationMessage For="()=>editUser.Password" />
+                    </div>
                 </div>
 
                 <div class="mb-3 text-center error-message">
@@ -90,7 +93,8 @@
 
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization = 
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         try {
@@ -143,14 +147,17 @@
 
     private async Task InactivateUser() {
         //megerősítés
-        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Biztosan inaktiválni akarod a fiókod?"); 
+        bool confirmed = 
+            await jsRuntime.InvokeAsync<bool>("confirm", "Biztosan inaktiválni akarod a fiókod?"); 
 
         if(confirmed) {
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
             try {
-                var response = await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
+                var response = 
+                    await httpClient.PutAsJsonAsync<UserVM>($"api/user/inactivate/{editUser.Id}", editUser);
                 if(response.IsSuccessStatusCode) {
                     navigationManager.NavigateTo("/logout");
                 } else {

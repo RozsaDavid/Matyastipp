@@ -32,7 +32,8 @@
                         <td style="word-wrap: break-word;">@contest.Name</td>
                         <td>@contest.StartDate.ToString("yyyy. MM. dd. HH:mm")</td>
                         <td>@contest.EndDate.ToString("yyyy. MM. dd. HH:mm")</td>
-                        <td><a href="@($"signUp?contestId={contest.Id}&prevPage=/signOngoing")" class="btn btn-success">Nevezés</a></td>
+                        <td><a href="@($"signUp?contestId={contest.Id}&prevPage=/signOngoing")"
+                            class="btn btn-success">Nevezés</a></td>
                     </tr>
                 }
             </table>
@@ -50,11 +51,14 @@
         string accessToken = httpContext.User.FindFirstValue("token");
         string userId = httpContext.User.FindFirstValue("id");
 
-        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        httpClient.DefaultRequestHeaders.Authorization = 
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
         try {
-            ongoingContestsList = await httpClient.GetFromJsonAsync<List<ContestVM>>($"api/contest/availableOngoingContest/{userId}");
+            ongoingContestsList = 
+                await httpClient.GetFromJsonAsync<List<ContestVM>>
+                    ($"api/contest/availableOngoingContest/{userId}");
         } catch(Exception ex) {
             navigationManager.NavigateTo("/apierror");
         }

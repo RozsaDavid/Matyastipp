@@ -16,16 +16,19 @@
     <div class="login-form-container">
         <h3>Bejelentkezés</h3>
         <div class="login-form">
-        <EditForm Model="loginModel" FormName="LoginForm" OnValidSubmit="Authenticate" Enhance>
+        <EditForm Model="loginUser" FormName="LoginForm" OnValidSubmit="Authenticate" Enhance>
             <DataAnnotationsValidator />
 
             <div class="mb-3">
                 <label for="username" class="form-label">Felhasználónév:</label>
-                <InputText id="username" @bind-Value="loginModel.Username" class="form-control" placeholder="Felhasználónév" />
+                <InputText id="username" @bind-Value="loginUser.Username" class="form-control" placeholder="Felhasználónév" />
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Jelszó:</label>
-                <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" placeholder="Jelszó" />
+                <InputText type="password" id="password" @bind-Value="loginUser.Password" class="form-control" placeholder="Jelszó" />
+                    <div class="error-message">
+                        <ValidationMessage For="()=>loginUser.Email" />
+                    </div>
             </div>
 
             <div class="mb-3 text-center error-message">
@@ -44,7 +47,7 @@
     public HttpContext httpContext { get; set; }
 
     [SupplyParameterFromForm]
-    public UserVM loginModel { get; set; } = new();
+    public UserVM loginUser { get; set; } = new();
 
     private List<UserVM>usersList = new();
 
@@ -52,13 +55,13 @@
 
     private async Task Authenticate() {
         //jelszó titkosítása
-        var source = Encoding.UTF8.GetBytes(loginModel.Password);
+        var source = Encoding.UTF8.GetBytes(loginUser.Password);
         var hashBytes = MD5.Create().ComputeHash(source);
-        loginModel.Password = BitConverter.ToString(hashBytes).Replace("-", "");
+        loginUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
         //adatok előkészítése az apinak
-        string[] userData = { loginModel.Username, loginModel.Password };
-        loginModel.Password = String.Empty;
+        string[] userData = { loginUser.Username, loginUser.Password };
+        loginUser.Password = String.Empty;
 
         try {
             //api hívás

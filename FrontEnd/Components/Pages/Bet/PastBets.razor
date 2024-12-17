@@ -23,6 +23,7 @@
                     <tr>
                         <th>Hazai csapat</th>
                         <th>Vendég csapat</th>
+                        <th>Meccs időpontja</th>
                         <th>Tippelt eredmény</th>
                         <th>Végeredmény</th>
                         <th></th>
@@ -34,6 +35,7 @@
                                     <tr>
                                         <td>@match.HomeName</td>
                                         <td>@match.GuestName</td>
+                                        <td>@match.Date.ToString("yyyy. MM. dd. HH:mm")</td>
                                         <td>@bet.HomeGoals : @bet.GuestGoals</td>
                                         <td>@match.HomeGoals : @match.GuestGoals</td>
                                         @if(bet.IsWon==1) {
@@ -90,7 +92,9 @@
                 foreach(var matchInContest in closedMatchesList[j]) {
                     BetVM betForMatchInContest = null;
                     try {
-                        betForMatchInContest = await httpClient.GetFromJsonAsync<BetVM>($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
+                        betForMatchInContest = 
+                            await httpClient.GetFromJsonAsync<BetVM>
+                                ($"api/bet/getBetWithAllIds/{contest.Id}/{userId}/{matchInContest.Id}");
                     } catch(HttpRequestException httpEx) { }
 
                     if(betForMatchInContest != null)
