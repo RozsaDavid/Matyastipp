@@ -68,7 +68,7 @@
 
         //jelszó hashelése
         var source = Encoding.UTF8.GetBytes(newUser.Password);
-        var hashBytes = MD5.Create().ComputeHash(source);
+        var hashBytes = SHA512.Create().ComputeHash(source);
         newUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
         try {

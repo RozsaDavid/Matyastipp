@@ -56,7 +56,7 @@
     private async Task Authenticate() {
         //jelszó titkosítása
         var source = Encoding.UTF8.GetBytes(loginUser.Password);
-        var hashBytes = MD5.Create().ComputeHash(source);
+        var hashBytes = SHA512.Create().ComputeHash(source);
         loginUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
         //adatok előkészítése az apinak

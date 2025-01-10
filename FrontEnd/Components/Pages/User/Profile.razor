@@ -119,7 +119,7 @@
 
         //megadott jelszó hashelése
         var source = Encoding.UTF8.GetBytes(editUser.Password);
-        var hashBytes = MD5.Create().ComputeHash(source);
+        var hashBytes = SHA512.Create().ComputeHash(source);
         editUser.Password = BitConverter.ToString(hashBytes).Replace("-", "");
 
         //új felhasználói adatok mentése
